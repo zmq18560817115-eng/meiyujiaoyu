@@ -1,0 +1,373 @@
+{
+  "exportedAt": "2026-06-05T18:07:17.928Z",
+  "baseUrl": "http://127.0.0.1:3000",
+  "deviceScaleFactor": 2,
+  "profiles": [
+    {
+      "id": "desktop",
+      "label": "桌面端 1440×900",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "outputDir": "desktop",
+      "count": 34,
+      "screens": [
+        {
+          "file": "00-welcome.png",
+          "title": "欢迎页 · 教师/学生入口",
+          "category": "welcome"
+        },
+        {
+          "file": "01-teacher-login.png",
+          "title": "教师登录页",
+          "category": "welcome"
+        },
+        {
+          "file": "02-student-login.png",
+          "title": "学生登录页",
+          "category": "welcome"
+        },
+        {
+          "file": "03-teacher-entry-loading.png",
+          "title": "教师 · 登录加载页",
+          "category": "welcome"
+        },
+        {
+          "file": "04-student-entry-loading.png",
+          "title": "学生 · 登录加载页",
+          "category": "welcome"
+        },
+        {
+          "file": "10-teacher-home.png",
+          "title": "教师 · 首页工作台",
+          "category": "teacher"
+        },
+        {
+          "file": "11-teacher-home-3d.png",
+          "title": "教师 · 3D全景鉴赏",
+          "category": "teacher"
+        },
+        {
+          "file": "11b-teacher-3d-projection.png",
+          "title": "教师 · 3D无线投屏部署",
+          "category": "teacher"
+        },
+        {
+          "file": "11c-teacher-3d-fullscreen.png",
+          "title": "教师 · 3D全屏科普解说",
+          "category": "overlay"
+        },
+        {
+          "file": "12-teacher-home-whiteboard.png",
+          "title": "教师 · 智慧白板",
+          "category": "teacher"
+        },
+        {
+          "file": "13-teacher-home-qa.png",
+          "title": "教师 · 智慧问答（小茶）",
+          "category": "teacher"
+        },
+        {
+          "file": "14-teacher-lessons.png",
+          "title": "教师 · AI微课备课",
+          "category": "teacher"
+        },
+        {
+          "file": "14b-teacher-lesson-ppt-cover.png",
+          "title": "教师 · 微课课件（封面）",
+          "category": "overlay"
+        },
+        {
+          "file": "14c-teacher-lesson-ppt-slide.png",
+          "title": "教师 · 微课课件（内容页）",
+          "category": "overlay"
+        },
+        {
+          "file": "15-teacher-resources-browse.png",
+          "title": "教师 · 非遗资源库（浏览）",
+          "category": "teacher"
+        },
+        {
+          "file": "15b-teacher-resources-sync.png",
+          "title": "教师 · 非遗资源库（平台同步）",
+          "category": "teacher"
+        },
+        {
+          "file": "15c-teacher-resources-upload.png",
+          "title": "教师 · 非遗资源库（本地上传）",
+          "category": "teacher"
+        },
+        {
+          "file": "15d-teacher-resource-preview.png",
+          "title": "教师 · 资源预览详情",
+          "category": "teacher"
+        },
+        {
+          "file": "16-teacher-works-pending.png",
+          "title": "教师 · 优秀推报（待审列表）",
+          "category": "teacher"
+        },
+        {
+          "file": "16b-teacher-works-report.png",
+          "title": "教师 · 优秀推报（班级周报）",
+          "category": "teacher"
+        },
+        {
+          "file": "16c-teacher-work-review.png",
+          "title": "教师 · 作品深度批阅",
+          "category": "teacher"
+        },
+        {
+          "file": "18-teacher-account-menu.png",
+          "title": "教师 · 账户菜单",
+          "category": "overlay"
+        },
+        {
+          "file": "17-teacher-notices-inbox.png",
+          "title": "教师 · 校园通知接收中心",
+          "category": "overlay"
+        },
+        {
+          "file": "18b-teacher-account-settings.png",
+          "title": "教师 · 授课终端显示设置",
+          "category": "overlay"
+        },
+        {
+          "file": "20-student-view3d.png",
+          "title": "学生 · 3D全景鉴赏",
+          "category": "student"
+        },
+        {
+          "file": "21-student-canvas-heritage.png",
+          "title": "学生 · 智能设色（非遗彩谱）",
+          "category": "student"
+        },
+        {
+          "file": "21b-student-canvas-custom.png",
+          "title": "学生 · 智能设色（幻彩自由配）",
+          "category": "student"
+        },
+        {
+          "file": "22-student-chat.png",
+          "title": "学生 · 对话伴读（小草）",
+          "category": "student"
+        },
+        {
+          "file": "22b-student-chat-library.png",
+          "title": "学生 · 对话素材库",
+          "category": "student"
+        },
+        {
+          "file": "23-student-gallery-hall.png",
+          "title": "学生 · 数智画廊展厅",
+          "category": "student"
+        },
+        {
+          "file": "23b-student-gallery-detail.png",
+          "title": "学生 · 画廊作品详情",
+          "category": "student"
+        },
+        {
+          "file": "24-student-gallery-mine.png",
+          "title": "学生 · 我的投稿",
+          "category": "student"
+        },
+        {
+          "file": "25-student-gallery-rank.png",
+          "title": "学生 · 班级排行榜",
+          "category": "student"
+        },
+        {
+          "file": "26-student-ink-bleed-loader.png",
+          "title": "学生 · 扎染发布动效加载",
+          "category": "overlay"
+        }
+      ]
+    },
+    {
+      "id": "mobile",
+      "label": "移动端 390×844",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "outputDir": "mobile",
+      "layout": "按功能模块分子目录，视口一屏（非长图拼接）",
+      "count": 34,
+      "screens": [
+        {
+          "file": "01-入口/01-欢迎页.png",
+          "title": "欢迎页 · 教师/学生入口",
+          "category": "01-入口"
+        },
+        {
+          "file": "01-入口/02-教师登录.png",
+          "title": "教师登录页",
+          "category": "01-入口"
+        },
+        {
+          "file": "01-入口/03-学生登录.png",
+          "title": "学生登录页",
+          "category": "01-入口"
+        },
+        {
+          "file": "01-入口/04-教师加载页.png",
+          "title": "教师 · 登录加载页",
+          "category": "01-入口"
+        },
+        {
+          "file": "01-入口/05-学生加载页.png",
+          "title": "学生 · 登录加载页",
+          "category": "01-入口"
+        },
+        {
+          "file": "02-教师-首页工作台/01-工作台总览.png",
+          "title": "教师 · 首页工作台",
+          "category": "02-教师-首页工作台"
+        },
+        {
+          "file": "02-教师-首页工作台/02-3D全景鉴赏.png",
+          "title": "教师 · 3D全景鉴赏",
+          "category": "02-教师-首页工作台"
+        },
+        {
+          "file": "02-教师-首页工作台/03-3D无线投屏.png",
+          "title": "教师 · 3D无线投屏部署",
+          "category": "02-教师-首页工作台"
+        },
+        {
+          "file": "02-教师-首页工作台/04-3D全屏解说.png",
+          "title": "教师 · 3D全屏科普解说",
+          "category": "02-教师-首页工作台"
+        },
+        {
+          "file": "02-教师-首页工作台/05-智慧白板.png",
+          "title": "教师 · 智慧白板",
+          "category": "02-教师-首页工作台"
+        },
+        {
+          "file": "02-教师-首页工作台/06-智慧问答.png",
+          "title": "教师 · 智慧问答（小茶）",
+          "category": "02-教师-首页工作台"
+        },
+        {
+          "file": "03-教师-AI微课备课/01-备课主页.png",
+          "title": "教师 · AI微课备课",
+          "category": "03-教师-AI微课备课"
+        },
+        {
+          "file": "03-教师-AI微课备课/02-微课课件封面.png",
+          "title": "教师 · 微课课件（封面）",
+          "category": "03-教师-AI微课备课"
+        },
+        {
+          "file": "03-教师-AI微课备课/03-微课课件内容.png",
+          "title": "教师 · 微课课件（内容页）",
+          "category": "03-教师-AI微课备课"
+        },
+        {
+          "file": "04-教师-非遗资源库/01-资源浏览.png",
+          "title": "教师 · 非遗资源库（浏览）",
+          "category": "04-教师-非遗资源库"
+        },
+        {
+          "file": "04-教师-非遗资源库/02-平台同步.png",
+          "title": "教师 · 非遗资源库（平台同步）",
+          "category": "04-教师-非遗资源库"
+        },
+        {
+          "file": "04-教师-非遗资源库/03-本地上传.png",
+          "title": "教师 · 非遗资源库（本地上传）",
+          "category": "04-教师-非遗资源库"
+        },
+        {
+          "file": "04-教师-非遗资源库/04-资源预览.png",
+          "title": "教师 · 资源预览详情",
+          "category": "04-教师-非遗资源库"
+        },
+        {
+          "file": "05-教师-优秀推报/01-待审列表.png",
+          "title": "教师 · 优秀推报（待审列表）",
+          "category": "05-教师-优秀推报"
+        },
+        {
+          "file": "05-教师-优秀推报/02-班级周报.png",
+          "title": "教师 · 优秀推报（班级周报）",
+          "category": "05-教师-优秀推报"
+        },
+        {
+          "file": "05-教师-优秀推报/03-作品批阅.png",
+          "title": "教师 · 作品深度批阅",
+          "category": "05-教师-优秀推报"
+        },
+        {
+          "file": "06-教师-账户与通知/02-账户菜单.png",
+          "title": "教师 · 账户菜单",
+          "category": "06-教师-账户与通知"
+        },
+        {
+          "file": "06-教师-账户与通知/01-通知中心.png",
+          "title": "教师 · 校园通知接收中心",
+          "category": "06-教师-账户与通知"
+        },
+        {
+          "file": "06-教师-账户与通知/03-终端设置.png",
+          "title": "教师 · 授课终端显示设置",
+          "category": "06-教师-账户与通知"
+        },
+        {
+          "file": "07-学生-3D全景鉴赏/01-3D交互实景.png",
+          "title": "学生 · 3D全景鉴赏",
+          "category": "07-学生-3D全景鉴赏"
+        },
+        {
+          "file": "08-学生-智能设色/01-非遗彩谱.png",
+          "title": "学生 · 智能设色（非遗彩谱）",
+          "category": "08-学生-智能设色"
+        },
+        {
+          "file": "08-学生-智能设色/02-幻彩自由配.png",
+          "title": "学生 · 智能设色（幻彩自由配）",
+          "category": "08-学生-智能设色"
+        },
+        {
+          "file": "09-学生-伴读对话/01-小草对话.png",
+          "title": "学生 · 对话伴读（小草）",
+          "category": "09-学生-伴读对话"
+        },
+        {
+          "file": "09-学生-伴读对话/02-对话素材库.png",
+          "title": "学生 · 对话素材库",
+          "category": "09-学生-伴读对话"
+        },
+        {
+          "file": "10-学生-数智画廊/01-展厅大厅.png",
+          "title": "学生 · 数智画廊展厅",
+          "category": "10-学生-数智画廊"
+        },
+        {
+          "file": "10-学生-数智画廊/02-作品详情.png",
+          "title": "学生 · 画廊作品详情",
+          "category": "10-学生-数智画廊"
+        },
+        {
+          "file": "10-学生-数智画廊/03-我的投稿.png",
+          "title": "学生 · 我的投稿",
+          "category": "10-学生-数智画廊"
+        },
+        {
+          "file": "10-学生-数智画廊/04-班级排行榜.png",
+          "title": "学生 · 班级排行榜",
+          "category": "10-学生-数智画廊"
+        },
+        {
+          "file": "08-学生-智能设色/03-扎染发布动效.png",
+          "title": "学生 · 扎染发布动效加载",
+          "category": "08-学生-智能设色"
+        }
+      ]
+    }
+  ],
+  "totalScreens": 68
+}

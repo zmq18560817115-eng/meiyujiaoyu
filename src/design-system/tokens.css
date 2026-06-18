@@ -1,0 +1,104 @@
+/**
+ * 青墙粉绘 · 2D 平面矢量 UI 设计规范（Design Tokens）
+ * - 细黑闭合描边、纯平涂、无渐变阴影/噪点/手绘笔触
+ * - 字体：苹方 PingFang SC
+ */
+
+:root {
+  /* ── 字体 ── */
+  --font-family-base: "PingFang SC", "PingFang TC", "Hiragino Sans GB",
+    "Microsoft YaHei", sans-serif;
+
+  /* ── 排版（规范表）── */
+  --text-display-lg-size: 24px;
+  --text-display-lg-weight: 700;
+  --text-display-lg-leading: 1.4;
+
+  --text-display-md-size: 20px;
+  --text-display-md-weight: 500;
+  --text-display-md-leading: 1.4;
+
+  --text-display-sm-size: 18px;
+  --text-display-sm-weight: 500;
+  --text-display-sm-leading: 1.5;
+
+  --text-body-size: 16px;
+  --text-body-weight: 400;
+  --text-body-leading: 1.6;
+
+  --text-secondary-size: 14px;
+  --text-secondary-weight: 400;
+  --text-secondary-leading: 1.5;
+
+  --text-caption-size: 12px;
+  --text-caption-weight: 400;
+  --text-caption-leading: 1.5;
+
+  /* ── 品牌色卡（插画 / UI 共用平涂色）── */
+  --color-theme-green: #28b06e;
+  --color-theme-yellow: #ffc526;
+  --color-accent-orange: #fba303;
+  --color-accent-brown: #3b2e0b;
+  --color-soft-yellow: #fff0c8;
+  --color-soft-sage: #8bc48f;
+  --color-ink-black: #000000;
+  --color-neutral-gray: #8c8c8c;
+
+  --color-theme-green-dark: #1a8f56;
+  --color-theme-yellow-hover: #ffcf4d;
+  --color-theme-green-hover: #34c078;
+  --color-surface-tint-green: #e8f5ea;
+  --color-surface-tint-yellow: #fff9ee;
+  --color-page-bg: #fff9ee;
+
+  /* Nupul 别名 */
+  --color-nupul-green: var(--color-theme-green);
+  --color-nupul-green-dark: var(--color-theme-green-dark);
+  --color-nupul-yellow: var(--color-theme-yellow);
+  --color-nupul-orange: var(--color-accent-orange);
+  --color-nupul-dark: var(--color-accent-brown);
+  --color-nupul-cream: var(--color-surface-tint-yellow);
+  --color-nupul-soft-green: var(--color-surface-tint-green);
+  --color-nupul-soft-yellow: var(--color-soft-yellow);
+  --color-nupul-soft-sage: var(--color-soft-sage);
+  --color-nupul-gray: var(--color-neutral-gray);
+  --color-nupul-black: var(--color-ink-black);
+
+  /* ── 2D 矢量描边与圆角（细黑闭合线框 + 纯平涂，禁止渐变/噪点/笔触）── */
+  --stroke-primary: var(--color-ink-black);
+  --stroke-illustration: var(--color-ink-black);
+  --stroke-width: 1px;
+  --stroke-width-md: 1.5px;
+  --stroke-width-illustration: 1.5px;
+  --radius-card: 24px;
+  --radius-card-lg: 28px;
+  --radius-control: 16px;
+  --radius-pill: 9999px;
+
+  /* ── 语义色 ── */
+  --color-text-primary: var(--color-accent-brown);
+  --color-text-secondary: rgba(59, 46, 11, 0.72);
+  --color-text-muted: rgba(59, 46, 11, 0.5);
+
+  --color-tag-accent: var(--color-theme-yellow);
+  --color-tag-brand: var(--color-soft-sage);
+  --color-status-warning: var(--color-accent-orange);
+  --color-status-success: var(--color-theme-green);
+
+  --color-surface: #ffffff;
+  --color-surface-muted: var(--color-surface-tint-yellow);
+  --color-border: var(--color-ink-black);
+
+  /* ── 间距（8px 栅格）── */
+  --space-1: 8px;
+  --space-2: 16px;
+  --space-3: 24px;
+  --space-4: 32px;
+  --space-5: 48px;
+  --space-6: 64px;
+
+  --layout-module-gap: 48px;
+  --layout-component-gap: 24px;
+  --layout-content-gap: 16px;
+  --layout-read-max: 720px;
+}

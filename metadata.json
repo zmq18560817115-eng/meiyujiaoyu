@@ -1,0 +1,6 @@
+{
+  "name": "大理白族彩绘美育系统",
+  "description": "融合了3D民居照壁漫游全景、智能配色、植物扎染渲染、非遗AI双语点读纠音与数智画廊的大理白族彩绘美育系统。",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

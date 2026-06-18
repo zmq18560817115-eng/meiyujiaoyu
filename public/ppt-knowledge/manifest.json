@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "entries": [
+    {
+      "id": "bai-building-art-database",
+      "title": "大理白族民居营造理论与空间艺术数据库",
+      "keywords": [
+        "营造", "空间艺术", "溯源", "三坊一照壁", "四合五天井", "照壁", "彩绘",
+        "家风", "纸筋灰", "微合院", "非遗", "严家大院"
+      ],
+      "theoryFile": "theory/大理白族民居营造理论与空间艺术数据库.md"
+    },
+    {
+      "id": "bai-architecture-kb-report",
+      "title": "大理白族民居建筑理论知识分类与数据库检索体系报告",
+      "keywords": ["白族", "民居", "建筑", "理论", "数据库", "检索", "大理"],
+      "theoryFile": "theory/大理白族民居建筑理论知识分类与数据库检索体系报告.md"
+    },
+    {
+      "id": "bai-spatial-layout",
+      "keywords": ["三坊一照壁", "四合五天井", "漏角天井", "空间布局"]
+    },
+    {
+      "id": "bai-craft-materials",
+      "keywords": ["纸筋灰", "海东青山石", "六合门", "营造工艺"]
+    },
+    {
+      "id": "bai-symbol-ethics",
+      "keywords": ["照壁", "家风", "山花", "清白传家", "湿壁画法", "百忍家声", "百忍家风"]
+    },
+    {
+      "id": "bairun-jiasheng-lesson",
+      "title": "百忍家声照壁故事课配图",
+      "keywords": ["百忍家声", "百忍家风", "张公艺", "家和", "忍字"],
+      "images": [
+        { "path": "images/bairun-jiasheng/01.jpg", "caption": "阿嬷带孩子来到写着「百忍家声」的照壁前" },
+        { "path": "images/bairun-jiasheng/02.jpg", "caption": "兄妹想到牡丹与飞燕，准备在照壁上合作作画" },
+        { "path": "images/bairun-jiasheng/03.jpg", "caption": "阿嬷讲述张公艺九代同堂、一百个「忍」字的故事" },
+        { "path": "images/bairun-jiasheng/04.jpg", "caption": "兄妹协作，在照壁上绘出牡丹与花鸟" },
+        { "path": "images/bairun-jiasheng/05.jpg", "caption": "「和」字照壁：花与鸟在同一面墙上和谐共处" }
+      ]
+    }
+  ]
+}
