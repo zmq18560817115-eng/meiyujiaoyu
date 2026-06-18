@@ -1,0 +1,28 @@
+# Render Blueprint — 青墙粉绘美育系统
+# 部署：Render Dashboard → New → Blueprint → 连接 GitHub 仓库
+# 仓库：https://github.com/zmq18560817115-eng/meiyujiaoyu
+#
+# 持久化说明：免费实例文件系统会在重启后清空。
+# 若需保留 data/store.json 与用户上传，请升级到 Starter 并启用下方 disk 配置。
+
+services:
+  - type: web
+    name: meiyujiaoyu
+    runtime: node
+    region: singapore
+    plan: free
+    repo: https://github.com/zmq18560817115-eng/meiyujiaoyu.git
+    branch: main
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/health
+    autoDeployTrigger: commit
+    # disk:                          # Starter 及以上可用
+    #   name: meiyu-data
+    #   mountPath: /opt/render/project/src/data
+    #   sizeGB: 1
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: GEMINI_API_KEY
+        sync: false

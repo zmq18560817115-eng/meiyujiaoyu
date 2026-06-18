@@ -14,6 +14,10 @@ import { loadStore } from '../lib/store.js';
 import { ok } from '../lib/response.js';
 
 export function registerApiRoutes(app: Express, ai: GoogleGenAI | null) {
+  app.get('/api/health', (_req, res) => {
+    res.status(200).json({ ok: true });
+  });
+
   app.use('/api/auth', authRouter);
   app.use('/api/courses', coursesRouter);
   app.use('/api/resources', resourcesRouter);
