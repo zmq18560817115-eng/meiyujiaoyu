@@ -68,6 +68,9 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
   const [mySubmissions, setMySubmissions] = useState<StudentArtwork[]>([]);
   const [mySubmissionsLoading, setMySubmissionsLoading] = useState(false);
   const [publishPendingNotice, setPublishPendingNotice] = useState(false);
+  const [aiColorAdviceUnlocked, setAiColorAdviceUnlocked] = useState(false);
+  const [showAiColorAdvice, setShowAiColorAdvice] = useState(false);
+  const [creativeActions, setCreativeActions] = useState(0);
 
   const switchStudentTab = (tab: StudentMainTab) => {
     onActiveTabChange(tab);
@@ -262,6 +265,9 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
       freeDrawBoardRef.current?.clear();
     }
     setPublishedSuccess(false);
+    setCreativeActions(0);
+    setAiColorAdviceUnlocked(false);
+    setShowAiColorAdvice(false);
   };
 
   const handleShufflePattern = () => {
@@ -272,6 +278,14 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
   const handlePublish = () => {
     if (!publishAuthor.trim()) {
       alert("请输入你的名字，署名你的大作！");
+      return;
+    }
+    if (creativeActions < 1) {
+      alert("请先完成至少一次填色或绘画，再发布作品。");
+      return;
+    }
+    if (!publishDiary.trim()) {
+      alert("请用一句简单的话写下你的创作想法，再发布作品。");
       return;
     }
     // Set the state to true to engage the beautiful "Ink Bleed" tie-dye simulation loader!
@@ -297,7 +311,7 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
         studentName: publishAuthor,
         title:
           canvasMode === "pattern"
-            ? `青墙粉绘：${activePattern.name}`
+            ? `智美教育系统：${activePattern.name}`
             : `自主创作：${publishAuthor.trim() || "我的小画家"}的照壁画`,
         grade: studentProfile?.grade || "双廊小学 创意生",
         imageUrl,
@@ -307,7 +321,7 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
             : ["自主创作", "照壁构想", "大理传统"],
         diary:
           publishDiary ||
-          "这是我在青墙粉绘系统的创作。在大理的青砖黛瓦里，画下属于我的颜色和祝福。",
+          "这是我在智美教育系统的创作。在大理的青砖黛瓦里，画下属于我的颜色和祝福。",
         templateType:
           canvasMode === "pattern" ? activePattern.id : "free-draw",
         artworkData:
@@ -343,7 +357,7 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
   return (
     <div className="ds-page portal-workspace py-2 md:py-3 flex flex-col gap-3 md:gap-4 h-full min-h-0">
       {/* Main interactive viewport container */}
-      <div className="nupul-tactile-card portal-workspace-panel bg-white p-3 md:p-4 relative overflow-hidden min-h-0">
+      <div className="nupul-tactile-card portal-workspace-panel bg-white p-3 md:p-4 relative overflow-visible min-h-0">
         {renderDiffuseAccents(DIFFUSE_PRESETS.mainPanel)}
         <div className="relative z-10">
         <AnimatePresence mode="wait">
@@ -558,6 +572,40 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
                               className="absolute w-0 h-0 opacity-0 pointer-events-none"
                             />
                           </label>
+                        </div>
+
+                        <div className="rounded-xl border-2 border-nupul-dark/15 bg-white p-2 space-y-1.5">
+                          <p className="text-[9px] font-bold text-nupul-dark leading-relaxed">
+                            先画出你的想法，再请 AI 提一个小建议。你的原配色会一直保留。
+                          </p>
+                          {!aiColorAdviceUnlocked ? (
+                            <button
+                              type="button"
+                              onClick={() => setAiColorAdviceUnlocked(true)}
+                              disabled={creativeActions < 3}
+                              className="w-full rounded-lg border-2 border-nupul-dark bg-nupul-yellow px-2 py-1.5 text-[9px] font-black cursor-pointer disabled:cursor-not-allowed disabled:opacity-45"
+                            >
+                              {creativeActions < 3
+                                ? `再完成 ${3 - creativeActions} 次填色后解锁`
+                                : "我已完成第一版配色"}
+                            </button>
+                          ) : (
+                            <>
+                              <button
+                                type="button"
+                                onClick={() => setShowAiColorAdvice((show) => !show)}
+                                className="w-full rounded-lg border-2 border-nupul-dark bg-nupul-green px-2 py-1.5 text-[9px] font-black text-white cursor-pointer"
+                                aria-expanded={showAiColorAdvice}
+                              >
+                                {showAiColorAdvice ? "收起 AI 小建议" : "请 AI 给一个小建议"}
+                              </button>
+                              {showAiColorAdvice && (
+                                <p className="rounded-lg bg-[#eefbf0] px-2 py-1.5 text-[9px] font-semibold text-nupul-dark leading-relaxed">
+                                  想让主体更醒目，可以只把最重要的花纹加深一档；也可以保留你现在的方案。
+                                </p>
+                              )}
+                            </>
+                          )}
                         </div>
 
                         {/* Dual Tabs switcher representing Dali design layout */}
@@ -793,11 +841,13 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
                             ref={patternBoardRef}
                             pattern={activePattern}
                             selectedColor={selectedColor}
+                            onArtworkChange={() => setCreativeActions((count) => Math.min(count + 1, 3))}
                           />
                         ) : (
                           <FreeDrawBoard
                             ref={freeDrawBoardRef}
                             selectedColor={selectedColor}
+                            onArtworkChange={() => setCreativeActions((count) => Math.min(count + 1, 3))}
                           />
                         )}
                       </div>
@@ -839,7 +889,7 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
                       <div className="md:col-span-3 pt-3 md:pt-0 relative z-10">
                         <button
                           onClick={handlePublish}
-                          disabled={publishedSuccess}
+                          disabled={publishedSuccess || creativeActions < 1 || !publishDiary.trim()}
                           className="w-full nupul-pill-btn-green py-2.5 px-4 flex items-center justify-center space-x-1 text-caption cursor-pointer"
                         >
                           {publishedSuccess ? (
@@ -852,6 +902,11 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
                             </>
                           )}
                         </button>
+                        {!publishedSuccess && (creativeActions < 1 || !publishDiary.trim()) && (
+                          <p className="text-[10px] text-nupul-dark/55 font-semibold text-center mt-1.5">
+                            {creativeActions < 1 ? "先完成一次创作" : "再写一句创作想法即可发布"}
+                          </p>
+                        )}
                       </div>
                     </div>
                   </div>

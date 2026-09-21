@@ -15,12 +15,13 @@ export type FreeDrawBoardHandle = {
 
 type FreeDrawBoardProps = {
   selectedColor: string;
+  onArtworkChange?: () => void;
 };
 
 export const FreeDrawBoard = React.forwardRef<
   FreeDrawBoardHandle,
   FreeDrawBoardProps
->(function FreeDrawBoard({ selectedColor }, ref) {
+>(function FreeDrawBoard({ selectedColor, onArtworkChange }, ref) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const drawingRef = useRef(false);
   const lastPosRef = useRef({ x: 0, y: 0 });
@@ -99,6 +100,7 @@ export const FreeDrawBoard = React.forwardRef<
     const pos = toCanvasPoint(e);
     lastPosRef.current = pos;
     strokeBetween(pos, { x: pos.x + 0.1, y: pos.y + 0.1 });
+    onArtworkChange?.();
   };
 
   const handlePointerMove = (e: React.PointerEvent<HTMLCanvasElement>) => {

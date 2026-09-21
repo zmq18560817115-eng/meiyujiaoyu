@@ -122,7 +122,7 @@ export const RoleSelection: React.FC<RoleSelectionProps> = ({
             <BrandLogo size="sm" className="shrink-0" />
             <div>
               <h1 className="font-bold text-body text-nupul-dark tracking-wider leading-none">
-                青墙粉绘
+                智美教育系统
               </h1>
               <span className="text-caption font-mono tracking-widest text-nupul-green-dark font-bold block leading-none mt-1">
                 DALI FOLK HOUSE AESTHETICS
@@ -150,10 +150,7 @@ export const RoleSelection: React.FC<RoleSelectionProps> = ({
           >
             <div className="lg:col-span-4 flex flex-col items-center lg:items-start text-center lg:text-left space-y-3 lg:space-y-4">
               <h2 className="text-[1.625rem] sm:text-[1.75rem] lg:text-[1.875rem] xl:text-[2rem] font-bold text-nupul-dark leading-snug tracking-tight">
-                壁画青墙
-                <span className="block text-[1.25rem] sm:text-[1.35rem] lg:text-[1.5rem] font-bold text-nupul-green-dark mt-1.5 lg:mt-2">
-                  粉绘非遗研学舱
-                </span>
+                智美美育教育系统
               </h2>
               <p className="text-caption sm:text-secondary text-nupul-dark/75 leading-relaxed max-w-sm lg:max-w-none">
                 融合 3D 照壁漫游全景与手捏结辫扎染植物活化，大理民间工坊自主设计的童趣交互平台。让白族吉祥飞蝶与苍莹石青，在孩子们纯真探索中传承出新！

@@ -7,6 +7,10 @@ import {
   buildBeautifiedSlidesFromCourse,
 } from "../../lib/lessonPpt";
 import type { AiGeneratedPlan, LessonSlide } from "../../lib/lessonPpt";
+import {
+  BAIREN_STORY_DESIGN_PDF_URL,
+  BAIREN_STORY_ID,
+} from "../../lib/lessonPpt/bairenStoryLesson";
 
 export type { LessonSlide, AiGeneratedPlan };
 
@@ -40,12 +44,33 @@ export function buildLessonSlides(course: Course): LessonSlide[] {
 function isImmersiveSlide(slide: LessonSlide): boolean {
   return Boolean(
     slide.imageUrl &&
-      (slide.layout === "cover" || slide.layout === "image-split"),
+      (slide.layout === "cover" ||
+        slide.layout === "image-split" ||
+        slide.layout === "full-image"),
   );
 }
 
 function SlideContent({ slide }: { slide: LessonSlide }) {
   const layout = slide.layout ?? "section";
+
+  if (layout === "full-image" && slide.imageUrl) {
+    return (
+      <div className="lesson-ppt-full-image relative h-full w-full flex items-center justify-center overflow-hidden">
+        <img
+          src={slide.imageUrl}
+          alt=""
+          aria-hidden
+          className="lesson-ppt-full-image-backdrop absolute inset-0 h-full w-full object-cover"
+        />
+        <div className="lesson-ppt-full-image-shade absolute inset-0" aria-hidden />
+        <img
+          src={slide.imageUrl}
+          alt={`${slide.title}。${slide.body}`}
+          className="lesson-ppt-full-image-foreground relative z-10 h-full w-full object-contain"
+        />
+      </div>
+    );
+  }
 
   if (layout === "cover") {
     if (slide.imageUrl) {
@@ -190,8 +215,14 @@ export const LessonPptOverlay: React.FC<LessonPptOverlayProps> = ({
     [customSlides, course],
   );
   const [index, setIndex] = useState(0);
+  const [contentMode, setContentMode] = useState<"ppt" | "design">("ppt");
+  const [designPage, setDesignPage] = useState(0);
+  const [designZoom, setDesignZoom] = useState(100);
+  const [designRotation, setDesignRotation] = useState(0);
   const slide = slides[index];
-  const immersive = isImmersiveSlide(slide);
+  const hasLessonDesign = course.id === BAIREN_STORY_ID;
+  const showingDesign = hasLessonDesign && contentMode === "design";
+  const immersive = !showingDesign && isImmersiveSlide(slide);
   const isFirst = index === 0;
   const isLast = index === slides.length - 1;
 
@@ -205,6 +236,10 @@ export const LessonPptOverlay: React.FC<LessonPptOverlayProps> = ({
 
   useEffect(() => {
     setIndex(0);
+    setContentMode("ppt");
+    setDesignPage(0);
+    setDesignZoom(100);
+    setDesignRotation(0);
   }, [course.id]);
 
   useEffect(() => {
@@ -242,7 +277,9 @@ export const LessonPptOverlay: React.FC<LessonPptOverlayProps> = ({
           </h3>
         </div>
         <span className="text-xs font-bold !text-white tabular-nums shrink-0 px-2">
-          {index + 1} / {slides.length}
+          {showingDesign
+            ? `教学设计第 ${designPage + 1} 页 / 共 5 页`
+            : `第 ${index + 1} 页 / 共 ${slides.length} 页`}
         </span>
         <button
           type="button"
@@ -254,12 +291,62 @@ export const LessonPptOverlay: React.FC<LessonPptOverlayProps> = ({
       </header>
 
       <main
-        className={`lesson-ppt-stage${immersive ? " lesson-ppt-stage--immersive" : ""}`}
+        className={`lesson-ppt-stage${immersive ? " lesson-ppt-stage--immersive" : ""}${showingDesign ? " lesson-ppt-stage--document" : ""}`}
       >
-        <article
-          key={`${course.id}-${index}`}
-          className={`lesson-ppt-slide${immersive ? " lesson-ppt-slide--immersive" : ""}`}
-        >
+        {showingDesign ? (
+          <article className="lesson-ppt-document" aria-label="百忍家声教学设计">
+            <div className="lesson-ppt-document-toolbar" role="toolbar" aria-label="教学设计文档操作">
+              <button
+                type="button"
+                onClick={() => setDesignZoom((zoom) => Math.max(60, zoom - 20))}
+                disabled={designZoom <= 60}
+                aria-label="缩小教学设计页面"
+              >
+                － 缩小
+              </button>
+              <span className="lesson-ppt-document-zoom" aria-live="polite">{designZoom}%</span>
+              <button
+                type="button"
+                onClick={() => setDesignZoom((zoom) => Math.min(200, zoom + 20))}
+                disabled={designZoom >= 200}
+                aria-label="放大教学设计页面"
+              >
+                ＋ 放大
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setDesignZoom(100);
+                  setDesignRotation(0);
+                }}
+              >
+                适合页面
+              </button>
+              <button
+                type="button"
+                onClick={() => setDesignRotation((rotation) => (rotation + 90) % 360)}
+                aria-label="顺时针旋转教学设计页面"
+              >
+                旋转页面
+              </button>
+            </div>
+            <div className="lesson-ppt-document-viewport">
+              <img
+                src={`/lesson-designs/bairen-jiasheng/page-${designPage + 1}.png`}
+                alt={`百忍家声的一百个忍字教学设计第${designPage + 1}页`}
+                className="lesson-ppt-document-page"
+                style={{
+                  width: `${designZoom}%`,
+                  transform: `rotate(${designRotation}deg)`,
+                }}
+              />
+            </div>
+          </article>
+        ) : (
+          <article
+            key={`${course.id}-${index}`}
+            className={`lesson-ppt-slide${immersive ? " lesson-ppt-slide--immersive" : ""}`}
+          >
           {!immersive && (
             <div className="shrink-0 flex items-center justify-between gap-3 pb-3 border-b-2 border-nupul-dark/10">
               <CategoryTag variant="brand">{slide.tag}</CategoryTag>
@@ -280,47 +367,115 @@ export const LessonPptOverlay: React.FC<LessonPptOverlayProps> = ({
           {!immersive && (
             <div className="shrink-0 pt-3 border-t-2 border-dashed border-nupul-dark/15 flex items-center justify-between gap-2">
               <span className="text-caption font-bold text-nupul-dark/45 truncate">
-                青墙粉绘 · 大理白族民居彩绘美育
+                智美教育系统 · 大理白族民居彩绘美育
               </span>
               <span className="text-caption font-bold text-nupul-green-dark shrink-0">
                 {course.difficulty}
               </span>
             </div>
           )}
-        </article>
+          </article>
+        )}
       </main>
 
       <footer className="lesson-ppt-footer">
-        <button
-          type="button"
-          disabled={isFirst}
-          onClick={goPrev}
-          className={`${navBtnClass} border-white/35 bg-white/12 !text-white hover:bg-white/22`}
-        >
-          上一页
-        </button>
-
-        <div className="lesson-ppt-dots">
-          {slides.map((_, i) => (
+        {hasLessonDesign &&
+          ((contentMode === "ppt" && index === 0) ||
+            (contentMode === "design" && designPage === 0)) && (
+          <div className="lesson-ppt-mode-switch" role="group" aria-label="课件内容切换">
             <button
-              key={i}
               type="button"
-              onClick={() => setIndex(i)}
-              aria-label={`跳转到第 ${i + 1} 页`}
-              aria-current={i === index ? "step" : undefined}
-              className={`lesson-ppt-dot ${i === index ? "is-active" : ""}`}
-            />
-          ))}
-        </div>
+              onClick={() => setContentMode("ppt")}
+              aria-pressed={contentMode === "ppt"}
+              className={contentMode === "ppt" ? "is-active" : ""}
+            >
+              PPT课件
+            </button>
+            <button
+              type="button"
+              onClick={() => setContentMode("design")}
+              aria-pressed={contentMode === "design"}
+              className={contentMode === "design" ? "is-active" : ""}
+            >
+              教学设计
+            </button>
+          </div>
+        )}
 
-        <button
-          type="button"
-          disabled={isLast}
-          onClick={goNext}
-          className={`${navBtnClass} border-nupul-dark bg-nupul-green !text-white hover:bg-nupul-green-dark`}
-        >
-          下一页
-        </button>
+        <div className="lesson-ppt-footer-nav">
+          {showingDesign ? (
+            <>
+              <button
+                type="button"
+                disabled={designPage === 0}
+                onClick={() => setDesignPage((page) => Math.max(0, page - 1))}
+                className={`${navBtnClass} lesson-ppt-nav-button border-white bg-white !text-nupul-dark hover:bg-nupul-cream disabled:bg-white/20 disabled:!text-white/55 disabled:border-white/25`}
+              >
+                ← 上一页
+              </button>
+              <div className="lesson-ppt-dots">
+                {Array.from({ length: 5 }, (_, page) => (
+                  <button
+                    key={page}
+                    type="button"
+                    onClick={() => setDesignPage(page)}
+                    aria-label={`跳转到教学设计第 ${page + 1} 页`}
+                    aria-current={page === designPage ? "step" : undefined}
+                    className={`lesson-ppt-dot ${page === designPage ? "is-active" : ""}`}
+                  />
+                ))}
+              </div>
+              <a
+                href={BAIREN_STORY_DESIGN_PDF_URL}
+                download="百忍家声的一百个忍字_教学设计.pdf"
+                className={`${navBtnClass} border-white bg-white !text-nupul-dark hover:bg-nupul-cream`}
+              >
+                下载PDF
+              </a>
+              <button
+                type="button"
+                disabled={designPage === 4}
+                onClick={() => setDesignPage((page) => Math.min(4, page + 1))}
+                className={`${navBtnClass} lesson-ppt-nav-button border-white bg-nupul-green !text-white hover:bg-nupul-green-dark disabled:bg-white/20 disabled:!text-white/55 disabled:border-white/25`}
+              >
+                下一页 →
+              </button>
+            </>
+          ) : (
+            <>
+              <button
+                type="button"
+                disabled={isFirst}
+                onClick={goPrev}
+                className={`${navBtnClass} lesson-ppt-nav-button border-white bg-white !text-nupul-dark hover:bg-nupul-cream disabled:bg-white/20 disabled:!text-white/55 disabled:border-white/25`}
+              >
+                ← 上一页
+              </button>
+
+              <div className="lesson-ppt-dots">
+                {slides.map((_, i) => (
+                  <button
+                    key={i}
+                    type="button"
+                    onClick={() => setIndex(i)}
+                    aria-label={`跳转到第 ${i + 1} 页`}
+                    aria-current={i === index ? "step" : undefined}
+                    className={`lesson-ppt-dot ${i === index ? "is-active" : ""}`}
+                  />
+                ))}
+              </div>
+
+              <button
+                type="button"
+                disabled={isLast}
+                onClick={goNext}
+                className={`${navBtnClass} lesson-ppt-nav-button border-white bg-nupul-green !text-white hover:bg-nupul-green-dark disabled:bg-white/20 disabled:!text-white/55 disabled:border-white/25`}
+              >
+                下一页 →
+              </button>
+            </>
+          )}
+        </div>
       </footer>
     </div>,
     document.body,

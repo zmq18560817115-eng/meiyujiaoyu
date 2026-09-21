@@ -1,10 +1,10 @@
 import React from "react";
-import logoCutout from "../../assets/qingqiang-logo-cutout.png";
+import logoCutout from "../../assets/zhimei-education-logo.png";
 
 const SIZE_CLASS = {
-  sm: "h-9 w-auto",
-  md: "h-14 w-auto",
-  lg: "h-44 w-auto sm:h-48",
+  sm: "h-10 w-16 sm:w-20",
+  md: "h-16 w-24",
+  lg: "h-44 w-64 sm:h-48 sm:w-72",
 } as const;
 
 interface BrandLogoProps {
@@ -13,11 +13,11 @@ interface BrandLogoProps {
   alt?: string;
 }
 
-/** 青墙粉绘 · 白族照壁标识（透明底） */
+/** 智美教育系统统一品牌标识 */
 export const BrandLogo: React.FC<BrandLogoProps> = ({
   size = "sm",
   className = "",
-  alt = "青墙粉绘标识",
+  alt = "智美教育系统标识",
 }) => (
   <img
     src={logoCutout}

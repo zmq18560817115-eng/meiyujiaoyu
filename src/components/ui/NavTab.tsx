@@ -134,7 +134,8 @@ export const NavTabBar: React.FC<NavTabBarProps> = ({
   </nav>
 );
 
-interface NavTabButtonProps {
+interface NavTabButtonProps
+  extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "onClick" | "size"> {
   active: boolean;
   onClick: () => void;
   children: React.ReactNode;
@@ -145,7 +146,7 @@ interface NavTabButtonProps {
   appearance?: NavTabAppearance;
 }
 
-export function NavTabButton({
+export const NavTabButton = React.forwardRef<HTMLButtonElement, NavTabButtonProps>(function NavTabButton({
   active,
   onClick,
   children,
@@ -154,18 +155,27 @@ export function NavTabButton({
   className,
   stretch = false,
   appearance = "segment",
-}: NavTabButtonProps) {
+  ...buttonProps
+}, ref) {
   return (
     <button
       type="button"
+      ref={ref}
       onClick={onClick}
       aria-current={active ? "page" : undefined}
+      {...buttonProps}
       className={cn(
-        getNavTabButtonClass(active, variant, size, stretch, appearance),
+        getNavTabButtonClass(
+          active,
+          variant as NavTabVariant,
+          size as NavTabSize,
+          stretch,
+          appearance as NavTabAppearance,
+        ),
         className,
       )}
     >
       {children}
     </button>
   );
-}
+});

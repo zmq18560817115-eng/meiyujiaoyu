@@ -43,13 +43,14 @@ export const DiffuseDecor: React.FC<DiffuseDecorProps> = ({
   className,
 }) => {
   if (!corner && !dot) return null;
+  const resolvedColor = color as DiffuseColor;
 
   return (
     <div
       className={cn(
         "nupul-diffuse",
-        corner && cornerClass(corner, color),
-        dot && dotClass(color),
+        corner && cornerClass(corner, resolvedColor),
+        dot && dotClass(resolvedColor),
         size !== "md" && `nupul-diffuse--${size}`,
         inset && "nupul-diffuse--inset",
         soft && "nupul-diffuse--soft",

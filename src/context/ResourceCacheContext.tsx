@@ -35,7 +35,7 @@ type ResourceCacheContextValue = {
 };
 
 const STORAGE_KEY = "nupul-resource-cache";
-const DEFAULT_FOLDER = "~/Downloads/青墙粉绘-资源缓存";
+const DEFAULT_FOLDER = "~/Downloads/智美教育系统-资源缓存";
 
 function loadCachedItems(): CachedResource[] {
   try {
@@ -63,7 +63,7 @@ function triggerBrowserDownload(filename: string, blob: Blob) {
 
 function buildResourceBlob(resource: Resource) {
   const content = [
-    "青墙粉绘 · 非遗资源缓存",
+    "智美教育系统 · 非遗资源缓存",
     `资源名称：${resource.title}`,
     `文件类型：${resource.fileType}`,
     `文件大小：${resource.size}`,
@@ -75,7 +75,7 @@ function buildResourceBlob(resource: Resource) {
 function buildWeeklyReportBlob(stats: { pending: number; total: number }) {
   const now = new Date();
   const content = [
-    "青墙粉绘 · 班级美育周报",
+    "智美教育系统 · 班级美育周报",
     `生成时间：${now.toLocaleString("zh-CN")}`,
     `总作品数：${stats.total} 份`,
     `待审批：${stats.pending} 份`,
@@ -138,12 +138,21 @@ export function ResourceCacheProvider({
   );
 
   const downloadToLocal = useCallback(
-    (resource: Resource, sourceEl: HTMLElement) => {
-      const blob = buildResourceBlob(resource);
+    async (resource: Resource, sourceEl: HTMLElement) => {
+      let blob = buildResourceBlob(resource);
+      if (resource.downloadUrl) {
+        try {
+          const response = await fetch(resource.downloadUrl);
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+          blob = await response.blob();
+        } catch {
+          // 网络或静态资源异常时保留原有资源说明下载，避免操作无响应。
+        }
+      }
       cacheAndDownload(
         {
           id: resource.id,
-          title: resource.title,
+          title: resource.downloadName ?? resource.title,
           fileType: resource.fileType,
           size: resource.size,
           savedAt: new Date().toISOString(),

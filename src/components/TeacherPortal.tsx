@@ -43,17 +43,28 @@ import {
   buildBeautifiedSlidesFromStoryLesson,
   courseFromStoryLesson,
 } from "../lib/lessonPpt";
+import {
+  isRabbitBlessingTopic,
+  RABBIT_BLESSING_PLAN,
+  RABBIT_BLESSING_PPTX_URL,
+  RABBIT_BLESSING_SLIDES,
+} from "../lib/lessonPpt/rabbitBlessingLesson";
+import {
+  BAIREN_STORY_ID,
+  BAIREN_STORY_SLIDES,
+} from "../lib/lessonPpt/bairenStoryLesson";
 import { DALI_STORY_LESSONS } from "../data/daliStoryMap";
 import { StoryWallMap } from "./teacher/StoryWallMap";
 import {
   ResourcePreviewPanel,
+  ResourceDownloadButton,
   PlatformSyncPanel,
   LocalUploadPanel,
   ExportReportPanel,
   WorkReviewDetailPanel,
 } from "./teacher/TeacherDeepPanels";
 import { NoticeBellIndicator } from "./shared/NoticeBellIndicator";
-import type { TeacherMainTab } from "./shared/MainPortalNav";
+import type { TeacherMainTab, TeacherQuickTarget } from "./shared/MainPortalNav";
 import { NavTabBar, getNavTabButtonClass } from "./ui/NavTab";
 import { CategoryTag, StatusTag } from "./ui/Tag";
 import {
@@ -86,6 +97,7 @@ interface TeacherPortalProps {
   onRefresh: () => void;
   readNoticeIds: Set<string>;
   onOpenNoticesInbox: (noticeId?: string) => void;
+  quickRequest?: { target: TeacherQuickTarget; id: number } | null;
 }
 
 export const TeacherPortal: React.FC<TeacherPortalProps> = ({
@@ -102,6 +114,7 @@ export const TeacherPortal: React.FC<TeacherPortalProps> = ({
   onRefresh,
   readNoticeIds,
   onOpenNoticesInbox,
+  quickRequest,
 }) => {
   const [homeSubView, setHomeSubView] = useState<
     "main" | "3d_view" | "whiteboard" | "q_and_a"
@@ -127,6 +140,7 @@ export const TeacherPortal: React.FC<TeacherPortalProps> = ({
   const unreadNoticeCount = announcements.filter(
     (a) => !readNoticeIds.has(a.id),
   ).length;
+
 
   const switchTeacherTab = (tab: TeacherMainTab) => {
     onActiveTabChange(tab);
@@ -214,7 +228,35 @@ export const TeacherPortal: React.FC<TeacherPortalProps> = ({
   const [activeCourseCategory, setActiveCourseCategory] = useState<
     "base" | "motif" | "color" | "craft"
   >("base");
+  const [customLessonOpen, setCustomLessonOpen] = useState(false);
+
+  useEffect(() => {
+    if (!quickRequest) return;
+    const target = quickRequest.target;
+    if (["story", "motif", "color", "craft", "custom"].includes(target)) {
+      onActiveTabChange("lessons");
+      setActiveCourseCategory(
+        target === "story"
+          ? "base"
+          : (target as "motif" | "color" | "craft"),
+      );
+      setCustomLessonOpen(target === "custom");
+      return;
+    }
+    onActiveTabChange("home");
+    setHomeSubView(
+      target === "whiteboard"
+        ? "whiteboard"
+        : target === "panorama"
+          ? "3d_view"
+          : "q_and_a",
+    );
+  }, [quickRequest, onActiveTabChange]);
   const [lessonTopic, setLessonTopic] = useState("");
+  const [lessonGrade, setLessonGrade] = useState("四年级");
+  const [lessonDuration, setLessonDuration] = useState("15分钟");
+  const [lessonGoal, setLessonGoal] = useState("");
+  const [lessonMaterials, setLessonMaterials] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
   const [aiGeneratedPlan, setAiGeneratedPlan] = useState<{
     title: string;
@@ -222,6 +264,16 @@ export const TeacherPortal: React.FC<TeacherPortalProps> = ({
     parts: { name: string; desc: string; tip: string }[];
     suggestions: string[];
   } | null>(null);
+  const [savingAiPlan, setSavingAiPlan] = useState(false);
+  const aiPlanResultRef = React.useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (!aiGeneratedPlan) return;
+    window.requestAnimationFrame(() => {
+      aiPlanResultRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      aiPlanResultRef.current?.focus({ preventScroll: true });
+    });
+  }, [aiGeneratedPlan]);
   const [lessonPresentCourse, setLessonPresentCourse] =
     useState<Course | null>(null);
   const [lessonPresentSlides, setLessonPresentSlides] = useState<
@@ -240,8 +292,42 @@ export const TeacherPortal: React.FC<TeacherPortalProps> = ({
 
   const handleConfirmAiPlan = async () => {
     if (!aiGeneratedPlan) return;
-    const slides = await buildBeautifiedSlidesFromAiPlan(aiGeneratedPlan);
-    openLessonPpt(courseFromAiPlan(aiGeneratedPlan), slides);
+    setSavingAiPlan(true);
+    try {
+      const coursePayload = courseFromAiPlan(aiGeneratedPlan);
+      await api.courses.create({
+        title: coursePayload.title,
+        category: activeCourseCategory === "base" ? "motif" : activeCourseCategory,
+        desc: coursePayload.desc,
+        duration: coursePayload.duration,
+        difficulty: coursePayload.difficulty,
+        isLocal: true,
+        outline: coursePayload.outline,
+      });
+      await onRefresh();
+      const slides =
+        aiGeneratedPlan.title === RABBIT_BLESSING_PLAN.title
+          ? RABBIT_BLESSING_SLIDES
+          : await buildBeautifiedSlidesFromAiPlan(aiGeneratedPlan);
+      openLessonPpt(coursePayload, slides);
+      setAiGeneratedPlan(null);
+    } catch (e) {
+      console.error(e);
+      alert("课程保存失败，请稍后重试");
+    } finally {
+      setSavingAiPlan(false);
+    }
+  };
+
+  const handleDeleteCourse = async (course: Course) => {
+    if (!window.confirm(`确认删除课程“${course.title}”吗？删除后无法在课程仓库中恢复。`)) return;
+    try {
+      await api.courses.remove(course.id);
+      await onRefresh();
+    } catch (e) {
+      console.error(e);
+      alert("课程删除失败，请确认已登录教师账号");
+    }
   };
 
   const handleGenerateStoryLessonPpt = async (storyId: string) => {
@@ -249,7 +335,10 @@ export const TeacherPortal: React.FC<TeacherPortalProps> = ({
     if (!story) return;
     setStoryPptLoadingId(storyId);
     try {
-      const slides = await buildBeautifiedSlidesFromStoryLesson(story.id);
+      const slides =
+        story.id === BAIREN_STORY_ID
+          ? BAIREN_STORY_SLIDES
+          : await buildBeautifiedSlidesFromStoryLesson(story.id);
       openLessonPpt(courseFromStoryLesson(story), slides);
     } catch (e) {
       console.error(e);
@@ -265,23 +354,22 @@ export const TeacherPortal: React.FC<TeacherPortalProps> = ({
     setAiGeneratedPlan(null);
 
     try {
-      const data = await api.ai.prepare(lessonTopic);
+      if (isRabbitBlessingTopic(lessonTopic)) {
+        setAiGeneratedPlan(RABBIT_BLESSING_PLAN);
+        return;
+      }
+      const lessonBrief = customLessonOpen
+        ? [
+            `主题：${lessonTopic}`,
+            `适用年级：${lessonGrade}`,
+            `课时：${lessonDuration}`,
+            lessonGoal.trim() ? `学习目标：${lessonGoal}` : "",
+            lessonMaterials.trim() ? `指定素材：${lessonMaterials}` : "",
+          ].filter(Boolean).join("；")
+        : lessonTopic;
+      const data = await api.ai.prepare(lessonBrief);
       setAiGeneratedPlan(data);
 
-      await api.courses.create({
-        title: data.title || lessonTopic,
-        category: "motif",
-        desc:
-          data.subtitle ||
-          "由 AI 备课精灵为您定制生成的15分钟民非遗深度研学微课程。",
-        duration: "15分钟精讲",
-        difficulty: "进阶",
-        isLocal: true,
-        outline: data.parts
-          ? data.parts.map((p) => p.name)
-          : ["教学指导第一步", "第二步"],
-      });
-      onRefresh();
     } catch (e) {
       console.error(e);
       // Fallback preview
@@ -544,7 +632,7 @@ export const TeacherPortal: React.FC<TeacherPortalProps> = ({
   return (
     <div className="ds-page portal-workspace py-2 md:py-3 flex flex-col gap-3 md:gap-4 h-full min-h-0">
       {/* Main Container - Redesigned to Nupul tactile thick outlined card style */}
-      <div className="nupul-tactile-card portal-workspace-panel bg-white p-3 md:p-4 relative overflow-hidden min-h-0">
+      <div className="nupul-tactile-card portal-workspace-panel bg-white p-3 md:p-4 relative min-h-0 overflow-visible">
         {renderDiffuseAccents(DIFFUSE_PRESETS.mainPanel)}
         <div className="relative z-10">
         <AnimatePresence mode="wait">
@@ -1483,7 +1571,7 @@ export const TeacherPortal: React.FC<TeacherPortalProps> = ({
               exit={{ opacity: 0 }}
               className="space-y-4"
             >
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 xl:gap-8 items-start">
                   {/* Left sidebar: Course Outline List */}
                   <div
                     className={`flex flex-col space-y-4 ${
@@ -1527,13 +1615,7 @@ export const TeacherPortal: React.FC<TeacherPortalProps> = ({
                     </div>
 
                     {/* Display filtered courses */}
-                    <div
-                      className={`space-y-4 pr-1 ${
-                        activeCourseCategory === "base"
-                          ? ""
-                          : "overflow-y-auto max-h-[520px]"
-                      }`}
-                    >
+                    <div className="space-y-4 pr-1">
                       {activeCourseCategory === "base" && (
                         <StoryWallMap
                           stories={DALI_STORY_LESSONS}
@@ -1596,16 +1678,25 @@ export const TeacherPortal: React.FC<TeacherPortalProps> = ({
                             <div className="mt-4 flex gap-2">
                               <button
                                 type="button"
-                                onClick={() =>
-                                  openLessonPpt(
-                                    course,
-                                    buildBeautifiedSlidesFromCourse(course),
-                                  )
-                                }
+                                onClick={() => openLessonPpt(
+                                  course,
+                                  course.title === RABBIT_BLESSING_PLAN.title
+                                    ? RABBIT_BLESSING_SLIDES
+                                    : buildBeautifiedSlidesFromCourse(course),
+                                )}
                                 className="nupul-pill-btn-green py-2 px-3 text-caption flex items-center justify-center space-x-1 font-bold cursor-pointer"
                               >
                                 <span>使用本篇教案上课</span>
                               </button>
+                              {course.isLocal && (
+                                <button
+                                  type="button"
+                                  onClick={() => handleDeleteCourse(course)}
+                                  className="rounded-2xl border-2 border-[#b42318] bg-white px-4 py-2 text-caption font-bold text-[#b42318] hover:bg-red-50 transition cursor-pointer"
+                                >
+                                  删除课程
+                                </button>
+                              )}
                             </div>
                           </div>
                         ))}
@@ -1620,44 +1711,88 @@ export const TeacherPortal: React.FC<TeacherPortalProps> = ({
                     <div className="space-y-3">
                       <div className="flex items-center space-x-1.5 text-nupul-dark">
                         <span className="font-bold text-secondary">
-                          一键急速备课
+                          {customLessonOpen ? "自定义主题备课" : "一键急速备课"}
                         </span>
                       </div>
 
                       <p className="text-caption text-nupul-dark/70 leading-relaxed font-semibold">
-                        艺术课跨界设课不知道如何下手？键入一个核心彩绘美学主题，让
-                        AI 白族传承精灵协助您自动备好 15
-                        分钟极简趣味非遗微教案。
+                        {customLessonOpen
+                          ? "填写真实课堂条件，AI 会按年级、课时和学习目标组织教案；不确定的内容可留空。"
+                          : "键入一个核心彩绘美学主题，让 AI 白族传承精灵协助您自动备好趣味非遗微教案。"}
                       </p>
 
+                      <button
+                        type="button"
+                        onClick={() => setCustomLessonOpen((open) => !open)}
+                        className="w-full bg-white border-2 border-nupul-dark rounded-xl py-2 px-3 text-caption font-bold text-left hover:bg-nupul-soft-yellow transition cursor-pointer"
+                        aria-expanded={customLessonOpen}
+                      >
+                        {customLessonOpen ? "收起课堂条件" : "＋ 展开自定义年级、课时与目标"}
+                      </button>
+
                       <div className="relative">
+                        <label htmlFor="custom-lesson-topic" className="text-caption font-bold text-nupul-dark block mb-1">
+                          课程主题 <span className="text-red-600">*</span>
+                        </label>
                         <input
+                          id="custom-lesson-topic"
                           type="text"
                           className="w-full bg-nupul-cream border-3 border-nupul-dark rounded-2xl py-2.5 px-3 pl-8 text-caption font-semibold focus:outline-none focus:bg-white text-nupul-dark placeholder-nupul-dark/40"
-                          placeholder="例如: 蝴蝶纹、或者 照壁色彩搭配..."
+                          placeholder="例如：小兔含灵芝草"
                           value={lessonTopic}
                           onChange={(e) => setLessonTopic(e.target.value)}
                         />
                         <span className="absolute inset-y-0 left-0 pl-2.5 flex items-center text-nupul-dark text-caption"></span>
                       </div>
 
+                      {customLessonOpen && (
+                        <div className="grid grid-cols-2 gap-2 rounded-2xl bg-nupul-cream/70 border-2 border-nupul-dark/15 p-3">
+                          <label className="text-caption font-bold text-nupul-dark">
+                            适用年级
+                            <select value={lessonGrade} onChange={(e) => setLessonGrade(e.target.value)} className="mt-1 w-full bg-white border-2 border-nupul-dark rounded-lg px-2 py-2">
+                              {["一年级", "二年级", "三年级", "四年级", "五年级", "六年级", "混合年级"].map((grade) => <option key={grade}>{grade}</option>)}
+                            </select>
+                          </label>
+                          <label className="text-caption font-bold text-nupul-dark">
+                            课时长度
+                            <select value={lessonDuration} onChange={(e) => setLessonDuration(e.target.value)} className="mt-1 w-full bg-white border-2 border-nupul-dark rounded-lg px-2 py-2">
+                              {["15分钟", "30分钟", "40分钟", "两课时"].map((duration) => <option key={duration}>{duration}</option>)}
+                            </select>
+                          </label>
+                          <label className="col-span-2 text-caption font-bold text-nupul-dark">
+                            希望学生学会什么
+                            <textarea value={lessonGoal} onChange={(e) => setLessonGoal(e.target.value)} rows={2} placeholder="例如：能说出蝴蝶纹的吉祥寓意，并完成一组对称纹样" className="mt-1 w-full resize-none bg-white border-2 border-nupul-dark rounded-lg px-2.5 py-2 font-semibold" />
+                          </label>
+                          <label className="col-span-2 text-caption font-bold text-nupul-dark">
+                            指定故事或本地素材（可选）
+                            <input value={lessonMaterials} onChange={(e) => setLessonMaterials(e.target.value)} placeholder="例如：严家大院照片、学生采风记录" className="mt-1 w-full bg-white border-2 border-nupul-dark rounded-lg px-2.5 py-2 font-semibold" />
+                          </label>
+                        </div>
+                      )}
+
                       <button
                         onClick={handleGenerateLesson}
-                        disabled={isGenerating}
+                        disabled={isGenerating || !lessonTopic.trim()}
                         className="w-full nupul-pill-btn-yellow py-3 px-4 flex items-center justify-center space-x-1.5 disabled:opacity-50 text-caption font-bold cursor-pointer"
                       >
                         <span>
                           {isGenerating
                             ? "AI传承助写精灵润笔中..."
-                            : "一键极速定制 15 分钟微课"}
+                            : customLessonOpen
+                              ? "按课堂条件生成教案"
+                              : "一键极速定制微课"}
                         </span>
                       </button>
+                      {!lessonTopic.trim() && (
+                        <p className="text-[10px] text-nupul-dark/55 font-semibold">请先填写课程主题，其他课堂条件可按需补充。</p>
+                      )}
                     </div>
 
                     {/* Plan Render output */}
                     {aiGeneratedPlan && (
-                      <div className="space-y-3">
-                        <div className="bg-nupul-cream p-4 rounded-2xl border-3 border-nupul-dark max-h-[280px] overflow-y-auto space-y-4">
+                      <div ref={aiPlanResultRef} tabIndex={-1} className="space-y-3 focus:outline-none" aria-live="polite">
+                        <p className="text-caption font-black text-nupul-green-dark">教案已生成，可检查后确认使用</p>
+                        <div className="bg-nupul-cream p-4 rounded-2xl border-3 border-nupul-dark space-y-4">
                           <div>
                             <span className="text-caption font-bold text-nupul-green-dark bg-nupul-green/10 border-2 border-nupul-green-dark/20 px-2.5 py-0.5 rounded-full">
                               美育示范案
@@ -1712,13 +1847,24 @@ export const TeacherPortal: React.FC<TeacherPortalProps> = ({
                           <button
                             type="button"
                             onClick={handleConfirmAiPlan}
-                            className="flex-1 nupul-pill-btn-green py-2.5 px-3 text-caption font-bold cursor-pointer"
+                            disabled={savingAiPlan}
+                            className="flex-1 nupul-pill-btn-green py-2.5 px-3 text-caption font-bold cursor-pointer disabled:opacity-50"
                           >
-                            确认使用
+                            {savingAiPlan ? "正在保存…" : "确认使用"}
                           </button>
+                          {aiGeneratedPlan.title === RABBIT_BLESSING_PLAN.title && (
+                            <a
+                              href={RABBIT_BLESSING_PPTX_URL}
+                              download="小白兔衔来的祝福_15分钟微课.pptx"
+                              className="flex-1 bg-nupul-yellow hover:bg-nupul-soft-yellow text-nupul-dark py-2.5 px-3 rounded-2xl border-2 border-nupul-dark text-caption font-bold text-center transition"
+                            >
+                              下载原始课件
+                            </a>
+                          )}
                           <button
                             type="button"
                             onClick={() => setAiGeneratedPlan(null)}
+                            disabled={savingAiPlan}
                             className="flex-1 bg-white hover:bg-nupul-cream text-nupul-dark py-2.5 px-3 rounded-2xl border-2 border-nupul-dark text-caption font-bold cursor-pointer transition"
                           >
                             取消
@@ -1867,6 +2013,35 @@ export const TeacherPortal: React.FC<TeacherPortalProps> = ({
                                   入档期：{res.date}
                                 </span>
                               </div>
+                              {res.attachments?.map((attachment) => {
+                                const attachmentResource: Resource = {
+                                  id: attachment.id,
+                                  title: attachment.title,
+                                  type: res.type,
+                                  size: attachment.size,
+                                  date: res.date,
+                                  fileType: attachment.fileType,
+                                  downloads: 0,
+                                  downloadUrl: attachment.downloadUrl,
+                                };
+                                return (
+                                  <div
+                                    key={attachment.id}
+                                    className="mt-2 flex flex-wrap items-center gap-2 rounded-xl border border-nupul-green-dark/25 bg-[#eefbf0] px-2.5 py-2"
+                                  >
+                                    <span className="text-caption font-black text-nupul-dark">
+                                      补充材料：{attachment.title}.docx
+                                    </span>
+                                    <span className="text-[10px] font-bold text-nupul-dark/55">
+                                      {attachment.size}
+                                    </span>
+                                    <ResourceDownloadButton
+                                      resource={attachmentResource}
+                                      compact
+                                    />
+                                  </div>
+                                );
+                              })}
                             </div>
                           </div>
 
@@ -1882,6 +2057,7 @@ export const TeacherPortal: React.FC<TeacherPortalProps> = ({
                             >
                               预览
                             </button>
+                            <ResourceDownloadButton resource={res} compact />
                           </div>
                         </div>
                       ))}

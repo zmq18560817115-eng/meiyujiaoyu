@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { motion } from "motion/react";
 import { useResourceCache } from "../../context/ResourceCacheContext";
 import {
@@ -189,6 +189,9 @@ export const ResourcePreviewPanel: React.FC<{
 }> = ({ resource, onBack }) => {
   const downloadBtnRef = useRef<HTMLButtonElement>(null);
   const { downloadToLocal } = useResourceCache();
+  const [fallbackPlaying, setFallbackPlaying] = useState(false);
+
+  React.useEffect(() => () => window.speechSynthesis?.cancel(), []);
 
   if (!resource) return null;
 
@@ -196,6 +199,24 @@ export const ResourcePreviewPanel: React.FC<{
     const el = downloadBtnRef.current;
     if (!el) return;
     downloadToLocal(resource, el);
+  };
+
+  const toggleFallbackPreview = () => {
+    if (fallbackPlaying) {
+      window.speechSynthesis?.cancel();
+      setFallbackPlaying(false);
+      return;
+    }
+    if (!("speechSynthesis" in window)) return;
+    const utterance = new SpeechSynthesisUtterance(
+      `${resource.title}。这是课堂试听片段。白族民居彩绘把家乡的颜色、故事和祝福画在照壁与门楼上。`,
+    );
+    utterance.lang = "zh-CN";
+    utterance.rate = 0.92;
+    utterance.onend = () => setFallbackPlaying(false);
+    utterance.onerror = () => setFallbackPlaying(false);
+    setFallbackPlaying(true);
+    window.speechSynthesis.speak(utterance);
   };
 
   return (
@@ -211,12 +232,59 @@ export const ResourcePreviewPanel: React.FC<{
         <PageBreadcrumb segments={["资源浏览", "资源预览"]} />
       </div>
       <InfoPanel title={resource.title}>
+        {["mp3", "mp4"].includes(resource.fileType.toLowerCase()) && (
+          <div className="mb-3 rounded-xl border-2 border-nupul-dark/20 bg-nupul-cream p-3">
+            <p className="text-caption font-black text-nupul-dark">媒体预览 · 默认暂停</p>
+            <p className="text-[10px] text-nupul-dark/60 mt-1">由教师手动播放；离开当前页面后停止播放。</p>
+            {resource.previewUrl ? (
+              resource.fileType.toLowerCase() === "mp3" ? (
+                <audio controls preload="metadata" src={resource.previewUrl} className="w-full mt-2" aria-label={`${resource.title} 音频播放器`} />
+              ) : (
+                <video controls preload="metadata" src={resource.previewUrl} className="w-full mt-2 rounded-lg border-2 border-nupul-dark" aria-label={`${resource.title} 视频播放器`} />
+              )
+            ) : (
+              <div className="mt-2 rounded-lg bg-white border border-dashed border-nupul-dark/25 px-3 py-2 text-caption text-nupul-dark/60 space-y-2">
+                <p>当前演示资源未绑定原始文件，可先试听系统生成的课堂预览；正式接入后将自动使用原文件。</p>
+                <button
+                  type="button"
+                  onClick={toggleFallbackPreview}
+                  className="w-full rounded-lg border-2 border-nupul-dark bg-nupul-yellow py-2 font-black text-nupul-dark cursor-pointer"
+                >
+                  {fallbackPlaying ? "暂停试听" : "手动播放试听"}
+                </button>
+              </div>
+            )}
+          </div>
+        )}
         <div className="grid grid-cols-2 gap-2 text-caption">
           <StatChip label="类型" value={resource.fileType.toUpperCase()} />
           <StatChip label="大小" value={resource.size} />
           <StatChip label="下载" value={`${resource.downloads} 次`} />
           <StatChip label="入库" value={resource.date} />
         </div>
+        {resource.attachments?.map((attachment) => (
+          <div
+            key={attachment.id}
+            className="mt-3 rounded-xl border-2 border-nupul-green-dark/25 bg-[#eefbf0] p-3"
+          >
+            <p className="text-caption font-black text-nupul-dark">{attachment.title}.docx</p>
+            <p className="mt-1 text-[10px] font-bold text-nupul-dark/55">
+              Word 文档 · {attachment.size} · 可直接下载原文件
+            </p>
+            <ResourceDownloadButton
+              resource={{
+                id: attachment.id,
+                title: attachment.title,
+                type: resource.type,
+                size: attachment.size,
+                date: resource.date,
+                fileType: attachment.fileType,
+                downloads: 0,
+                downloadUrl: attachment.downloadUrl,
+              }}
+            />
+          </div>
+        ))}
         <button
           ref={downloadBtnRef}
           type="button"
@@ -227,6 +295,32 @@ export const ResourcePreviewPanel: React.FC<{
         </button>
       </InfoPanel>
     </div>
+  );
+};
+
+export const ResourceDownloadButton: React.FC<{
+  resource: Resource;
+  compact?: boolean;
+}> = ({ resource, compact = false }) => {
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const { downloadToLocal } = useResourceCache();
+  const [downloaded, setDownloaded] = useState(false);
+
+  return (
+    <button
+      ref={buttonRef}
+      type="button"
+      onClick={() => {
+        if (buttonRef.current) {
+          downloadToLocal(resource, buttonRef.current);
+          setDownloaded(true);
+        }
+      }}
+      className={`${compact ? "px-3 py-1" : "px-4 py-2"} rounded-xl bg-nupul-green hover:bg-nupul-green-dark text-white text-caption font-black border-2 border-nupul-dark transition active:translate-y-0.5 cursor-pointer`}
+      aria-label={`下载 ${resource.title}`}
+    >
+      {downloaded ? "已下载 ✓" : "下载"}
+    </button>
   );
 };
 
@@ -539,6 +633,23 @@ export const WorkReviewDetailPanel: React.FC<{
           <p className="text-caption text-nupul-dark/80 bg-nupul-cream/60 p-2.5 rounded-xl border-2 border-stone-800/5 leading-relaxed font-medium italic">
             <strong>学习日记:</strong> “{work.diary}”
           </p>
+          <section className="rounded-2xl border-2 border-nupul-green-dark bg-[#eefbf0] p-3" aria-label="AI评价摘要">
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-caption font-black text-nupul-green-dark">AI评价 · 先看重点</span>
+              <span className="text-[10px] font-bold bg-white border border-nupul-green-dark/25 rounded-full px-2 py-0.5">学生易懂版</span>
+            </div>
+            <p className="text-caption font-bold text-nupul-dark mt-2 leading-relaxed">
+              画面主题很清楚，也能看出你在认真讲家乡的故事。下次可以让最想表现的纹样更突出一些。
+            </p>
+            <details className="mt-2 rounded-xl bg-white/80 border border-nupul-dark/15 px-3 py-2">
+              <summary className="text-caption font-bold text-nupul-dark cursor-pointer">展开专业依据与改进建议</summary>
+              <div className="grid sm:grid-cols-3 gap-2 mt-2 text-caption leading-relaxed">
+                <p><strong>做得好：</strong>色彩协调，画面完整。</p>
+                <p><strong>再试试：</strong>用大小或深浅突出主体。</p>
+                <p><strong>文化发现：</strong>作品能联系白族民居寓意。</p>
+              </div>
+            </details>
+          </section>
           {isApproved ? (
             <div className="pt-2 space-y-2.5">
               <p className="text-caption font-bold text-nupul-green-dark">

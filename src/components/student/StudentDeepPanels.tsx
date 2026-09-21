@@ -101,7 +101,7 @@ export const TimelinePanel: React.FC = () => (
         note: "严家大院等宅院彩绘体系成熟",
       },
       { era: "近代", title: "耕读传家照壁", note: "清白传家等家风大字普及" },
-      { era: "今日", title: "数字非遗进校园", note: "青墙粉绘研学舱传承新篇" },
+      { era: "今日", title: "数字非遗进校园", note: "智美教育系统研学舱传承新篇" },
     ].map((item, i) => (
       <div key={i} className="flex gap-3">
         <div className="w-14 shrink-0 bg-nupul-yellow border-2 border-nupul-dark rounded-xl flex items-center justify-center font-bold text-caption">

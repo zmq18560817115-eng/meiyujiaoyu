@@ -168,7 +168,7 @@ export const UserAccountMenu: React.FC<UserAccountMenuProps> = ({
   cachedItems = [],
   pendingCacheCount = 0,
   avatarPulse = false,
-  cacheFolderPath = "~/Downloads/青墙粉绘-资源缓存",
+  cacheFolderPath = "~/Downloads/智美教育系统-资源缓存",
   onOpenLocalCacheFolder,
   onClearPendingCache,
   onSwitchRole,
@@ -265,7 +265,7 @@ export const UserAccountMenu: React.FC<UserAccountMenuProps> = ({
   const aboutItems: MenuItem[] = [
     {
       id: "about",
-      label: "关于「青墙粉绘」",
+      label: "关于「智美教育系统」",
       icon: <NupulIcon name="pattern" size="sm" />,
     },
     {
@@ -305,7 +305,7 @@ export const UserAccountMenu: React.FC<UserAccountMenuProps> = ({
       body: "默认开启 3D 全景投屏同步与学生平板镜像。画布导出格式为 PNG，分辨率适配教室大屏。",
     },
     about: {
-      title: "关于「青墙粉绘」",
+      title: "关于「智美教育系统」",
       body: "云南大理双廊中心小学美育课题组 · 数字化非遗进校园试点系统。",
     },
     help: {

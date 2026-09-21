@@ -48,7 +48,7 @@ export const PortalTopBar: React.FC<PortalTopBarProps> = ({
             <BrandLogo size="sm" className="shrink-0" />
             <div className="hidden sm:block min-w-0">
               <span className="text-display-sm font-bold tracking-wide leading-none text-nupul-dark block">
-                青墙粉绘
+                智美教育系统
               </span>
             </div>
           </button>

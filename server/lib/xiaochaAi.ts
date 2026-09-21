@@ -99,11 +99,33 @@ export function buildOfflineTeacherReply(
     };
   }
 
-  const bullet = knowledgeBullets[0];
+  if (text.includes('评价') || text.includes('点评') || text.includes('怎么改')) {
+    return {
+      text: '先给一句核心结论，再说“做得好”和“下次试试”各1点。面向学生可说：画面主题很清楚；下次把最重要的纹样画得更突出。专业依据放在展开区给教师查看。',
+      source: '本地教学策略库',
+    };
+  }
+
+  if (text.includes('活动') || text.includes('课堂') || text.includes('怎么教') || text.includes('设计')) {
+    const fact = knowledgeBullets[0] ? `知识切入：${knowledgeBullets[0]} ` : '';
+    return {
+      text: `${fact}建议用“看一看—说一说—画一画—讲一讲”四步：先观察实物或全景，再让学生描述特点，独立创作，最后用一句话分享选择理由。`.slice(0, 180),
+      source: knowledgeBullets[0] ? '洱海苍山非遗教学智库' : '本地教学策略库',
+    };
+  }
+
+  if (text.length < 5 || /^(怎么|如何|为什么)[？?]?$/.test(text.trim())) {
+    return {
+      text: '我可以一起设计。请再告诉我三个条件中的任意一个：学生年级、可用课时、希望学生最后会做什么。我会按你的真实课堂条件给出步骤。',
+      source: '小茶备课引导',
+    };
+  }
+
+  const bullet = knowledgeBullets.slice(0, 2).join('；');
   return {
     text: bullet
-      ? `关于「${message}」：${bullet} 结合本课「${lessonTopic}」可先做观察讨论，再动手设色。`
-      : `关于「${message}」，在大理白族彩绘中常寄托吉祥与耕读传家的愿望。可结合本课「${lessonTopic}」做情境导入。`,
+      ? `先说结论：${bullet}。结合“${lessonTopic}”，可让学生先找图中证据，再用自己的话解释，最后通过小幅创作验证理解。`.slice(0, 180)
+      : `这个问题可以继续展开。为了避免给出空泛答案，请补充学生年级、课时或课堂目标；我会按“导入—观察—创作—评价”生成可直接使用的建议。`,
     source: bullet ? '洱海苍山非遗教学智库' : '本地智库离线算法',
   };
 }

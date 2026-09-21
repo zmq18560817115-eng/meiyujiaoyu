@@ -180,7 +180,7 @@ body {
   .portal-workspace {
     flex: 1;
     min-height: 0;
-    height: 100%;
+    height: auto;
     display: flex;
     flex-direction: column;
   }
@@ -188,7 +188,7 @@ body {
   .portal-workspace-panel {
     flex: 1;
     min-height: 0;
-    overflow-y: auto;
+    overflow: visible;
   }
 }
 
@@ -841,6 +841,26 @@ body {
   background: #1a1408;
 }
 
+/* 原始 16:9 课件在不同屏幕比例下完整显示，并用同页柔化背景填满余量。 */
+.lesson-ppt-full-image {
+  background: #203e48;
+  isolation: isolate;
+}
+
+.lesson-ppt-full-image-backdrop {
+  filter: blur(22px) saturate(0.82);
+  opacity: 0.58;
+  transform: scale(1.08);
+}
+
+.lesson-ppt-full-image-shade {
+  background: rgb(16 24 24 / 30%);
+}
+
+.lesson-ppt-full-image-foreground {
+  filter: drop-shadow(0 0 18px rgb(0 0 0 / 24%));
+}
+
 .lesson-ppt-immersive-scrim {
   background: linear-gradient(
     to top,
@@ -921,14 +941,142 @@ body {
 
 .lesson-ppt-footer {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   gap: 0.75rem;
   min-height: 3.5rem;
   padding: 0.75rem 1rem;
   padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
   border-top: 1px solid rgb(255 255 255 / 0.15);
   background: #2d2410;
+}
+
+.lesson-ppt-footer-nav {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.lesson-ppt-mode-switch {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(7rem, 1fr));
+  gap: 0.25rem;
+  padding: 0.25rem;
+  border: 2px solid rgb(255 255 255 / 55%);
+  border-radius: 9999px;
+  background: rgb(255 255 255 / 12%);
+}
+
+.lesson-ppt-mode-switch button {
+  padding: 0.45rem 1rem;
+  border-radius: 9999px;
+  color: rgb(255 255 255 / 78%);
+  font-size: var(--text-caption-size, 12px);
+  font-weight: 800;
+  cursor: pointer;
+  transition: 160ms ease;
+}
+
+.lesson-ppt-mode-switch button.is-active {
+  background: #fff;
+  color: var(--color-text-primary);
+}
+
+.lesson-ppt-stage--document {
+  padding: 0.75rem;
+  background: #d9d6cf;
+}
+
+.lesson-ppt-document {
+  width: min(100%, 74rem);
+  height: 100%;
+  min-height: 0;
+  margin-inline: auto;
+  overflow: hidden;
+  border: 2px solid rgb(255 255 255 / 60%);
+  border-radius: 0.75rem;
+  background: #fff;
+  box-shadow: 0 10px 32px rgb(0 0 0 / 24%);
+  display: flex;
+  flex-direction: column;
+}
+
+.lesson-ppt-document-toolbar {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  padding: 0.5rem;
+  border-bottom: 1px solid rgb(45 36 16 / 18%);
+  background: #f7f3e9;
+}
+
+.lesson-ppt-document-toolbar button {
+  min-height: 2rem;
+  padding: 0.3rem 0.7rem;
+  border: 1.5px solid var(--color-text-primary);
+  border-radius: 0.6rem;
+  background: #fff;
+  color: var(--color-text-primary);
+  font-size: 0.72rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.lesson-ppt-document-toolbar button:hover:not(:disabled) {
+  background: var(--color-surface-tint-yellow);
+}
+
+.lesson-ppt-document-toolbar button:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+}
+
+.lesson-ppt-document-zoom {
+  min-width: 3.2rem;
+  text-align: center;
+  color: var(--color-text-primary);
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.lesson-ppt-document-viewport {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 0.75rem;
+  background: #dedbd4;
+}
+
+.lesson-ppt-document-page {
+  height: auto;
+  max-width: none;
+  flex: none;
+  object-fit: contain;
+  transform-origin: center center;
+  transition: width 160ms ease, transform 180ms ease;
+  box-shadow: 0 4px 18px rgb(0 0 0 / 18%);
+}
+
+.lesson-ppt-nav-button {
+  min-width: 6.5rem;
+  min-height: 2.75rem;
+  font-weight: 800;
+  box-shadow: 0 0 0 1px rgb(255 255 255 / 0.12);
+}
+
+.lesson-ppt-nav-button:focus-visible,
+.lesson-ppt-dot:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 3px;
 }
 
 @media (min-width: 640px) {
@@ -950,8 +1098,8 @@ body {
 }
 
 .lesson-ppt-dot {
-  width: 0.625rem;
-  height: 0.625rem;
+  width: 0.75rem;
+  height: 0.75rem;
   border-radius: 9999px;
   flex-shrink: 0;
   cursor: pointer;
@@ -959,6 +1107,14 @@ body {
   padding: 0;
   background: rgb(255 255 255 / 0.55);
   transition: width 0.2s ease, background-color 0.2s ease;
+}
+
+@media (max-width: 480px) {
+  .lesson-ppt-nav-button {
+    min-width: 5.75rem;
+    min-height: 2.75rem;
+    padding-inline: 0.75rem;
+  }
 }
 
 .lesson-ppt-dot.is-active {
@@ -1482,4 +1638,3 @@ body {
 .home-splash-sparkle {
   box-shadow: 0 0 0 1px rgb(59 46 11 / 0.08);
 }
-

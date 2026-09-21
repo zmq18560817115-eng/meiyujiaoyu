@@ -3,12 +3,13 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useCallback, useRef } from "react";
+import React, { useState, useCallback, useEffect, useRef } from "react";
 import { flushSync } from "react-dom";
 import { RoleSelection } from "./components/RoleSelection";
 import {
   StudentMainNav,
   TeacherMainNav,
+  type TeacherQuickTarget,
   type StudentMainTab,
   type TeacherMainTab,
 } from "./components/shared/MainPortalNav";
@@ -51,7 +52,15 @@ function AppContent() {
   } = useResourceCache();
   const [role, setRole] = useState<Role>("welcome");
   const [teacherMainTab, setTeacherMainTab] = useState<TeacherMainTab>("home");
+  const [teacherQuickRequest, setTeacherQuickRequest] = useState<{
+    target: TeacherQuickTarget;
+    id: number;
+  } | null>(null);
   const [studentMainTab, setStudentMainTab] = useState<StudentMainTab>("view3d");
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+  }, [teacherMainTab, studentMainTab, role]);
   const [teacherName, setTeacherName] = useState("徐海明");
   const [teacherProfile, setTeacherProfile] = useState<{
     workId?: string;
@@ -343,7 +352,7 @@ function AppContent() {
             </motion.div>
           ) : (
         <motion.div
-          className="h-dvh max-h-dvh min-h-0 flex flex-col overflow-hidden"
+          className="min-h-screen flex flex-col overflow-x-hidden"
           initial={{ opacity: 0, y: 18, scale: 0.992 }}
           animate={{
             opacity: entryLoaderExiting ? 0.92 : 1,
@@ -363,6 +372,9 @@ function AppContent() {
                 <TeacherMainNav
                   activeTab={teacherMainTab}
                   onChange={setTeacherMainTab}
+                  onQuickNavigate={(target) => {
+                    setTeacherQuickRequest({ target, id: Date.now() });
+                  }}
                   pendingWorks={studentWorks.filter((w) => !w.approved).length}
                 />
               ) : (
@@ -423,12 +435,12 @@ function AppContent() {
             />
           )}
 
-          <main className="flex-1 py-1.5 md:py-2 min-h-0 overflow-hidden">
+          <main className="flex-1 py-1.5 md:py-2 min-h-0 overflow-visible">
             <AnimatePresence mode="wait">
               {role === "student" ? (
                 <motion.div
                   key="student-portal-wrapper"
-                  className="h-full min-h-0 flex flex-col"
+                  className="min-h-0 flex flex-col"
                   initial={{ opacity: 0, x: -15 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: 15 }}
@@ -444,7 +456,7 @@ function AppContent() {
               ) : (
                 <motion.div
                   key="teacher-portal-wrapper"
-                  className="h-full min-h-0 flex flex-col"
+                  className="min-h-0 flex flex-col"
                   initial={{ opacity: 0, x: 15 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -15 }}
@@ -463,6 +475,7 @@ function AppContent() {
                     onRefresh={refreshTeacher}
                     readNoticeIds={readNoticeIds}
                     onOpenNoticesInbox={openNoticesInbox}
+                    quickRequest={teacherQuickRequest}
                   />
                 </motion.div>
               )}

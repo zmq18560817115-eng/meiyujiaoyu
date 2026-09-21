@@ -2,6 +2,7 @@ export type LessonSlideLayout =
   | "cover"
   | "section"
   | "image-split"
+  | "full-image"
   | "content"
   | "closing";
 

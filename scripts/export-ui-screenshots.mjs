@@ -22,7 +22,7 @@ import { join, dirname } from "path";
 import { fileURLToPath } from "url";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
-const outRoot = join(root, "exports/ui-design-screenshots");
+const outRoot = process.env.UI_EXPORT_OUT_DIR ?? join(root, "exports/ui-design-screenshots");
 const baseUrl = process.env.UI_EXPORT_BASE_URL ?? "http://127.0.0.1:3000";
 const exportOnly = process.env.UI_EXPORT_ONLY ?? "";
 
@@ -652,7 +652,7 @@ async function main() {
     cleanLegacyMobileFlatPngs();
   }
 
-  const browser = await chromium.launch({ headless: true });
+  const browser = await chromium.launch({ headless: true, channel: process.env.UI_EXPORT_BROWSER_CHANNEL || undefined });
   const results = [];
 
   try {

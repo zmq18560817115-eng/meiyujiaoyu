@@ -46,6 +46,7 @@ function MonitorTile({
   terminal,
   refreshing,
 }: {
+  key?: React.Key;
   terminal: LabTerminal;
   refreshing: boolean;
 }) {

@@ -49,7 +49,7 @@ export const PanoramaLessonPanel: React.FC<PanoramaLessonPanelProps> = ({
 
   useEffect(() => {
     if (isFullscreen) {
-      setPlaying(true);
+      setPlaying(false);
       return;
     }
     if (playing) stopNarration();
@@ -132,8 +132,8 @@ export const PanoramaLessonPanel: React.FC<PanoramaLessonPanelProps> = ({
           >
             <span>
               {playing || isFullscreen
-                ? "正在全屏播放科普解说…"
-                : "播放本视角科普解说"}
+                ? isFullscreen ? "全屏展示中 · 解说由教师控制" : "正在播放科普解说…"
+                : onFullscreenPlay ? "进入全屏 · 手动播放解说" : "播放本视角科普解说"}
             </span>
           </button>
 

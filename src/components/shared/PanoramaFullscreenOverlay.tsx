@@ -14,7 +14,7 @@ interface PanoramaFullscreenOverlayProps {
 export const PanoramaFullscreenOverlay: React.FC<
   PanoramaFullscreenOverlayProps
 > = ({ activeViewId, view, onViewChange, onClose }) => {
-  const [playing, setPlaying] = useState(true);
+  const [playing, setPlaying] = useState(false);
 
   useEffect(() => {
     const prev = document.body.style.overflow;
@@ -34,20 +34,7 @@ export const PanoramaFullscreenOverlay: React.FC<
 
   useEffect(() => {
     window.speechSynthesis?.cancel();
-    setPlaying(true);
-
-    if (!("speechSynthesis" in window)) return;
-
-    const utterance = new SpeechSynthesisUtterance(view.narration);
-    utterance.lang = "zh-CN";
-    utterance.rate = 0.95;
-    utterance.onend = () => setPlaying(false);
-    utterance.onerror = () => setPlaying(false);
-    window.speechSynthesis.speak(utterance);
-
-    return () => {
-      window.speechSynthesis.cancel();
-    };
+    setPlaying(false);
   }, [view.id, view.narration]);
 
   const stopNarration = () => {
@@ -94,7 +81,7 @@ export const PanoramaFullscreenOverlay: React.FC<
             onClick={() => (playing ? stopNarration() : resumeNarration())}
             className="w-full text-xs font-bold py-2 px-2 sm:px-3 rounded-xl border-2 border-white/30 bg-white/15 !text-white hover:bg-white/25 cursor-pointer text-center"
           >
-            {playing ? "停止解说" : "继续解说"}
+            {playing ? "暂停解说" : "播放解说"}
           </button>
           <button
             type="button"
@@ -119,7 +106,7 @@ export const PanoramaFullscreenOverlay: React.FC<
 
       <footer className="shrink-0 px-3 sm:px-4 py-2.5 bg-black/90 border-t border-white/10 space-y-0.5">
         <p className="text-xs font-bold !text-white">
-          {playing ? "正在播放本视角科普解说" : "解说已暂停"}
+          {playing ? "正在播放本视角科普解说" : "解说已暂停 · 点击上方按钮播放"}
         </p>
         <p className="text-xs !text-white/75 leading-relaxed line-clamp-2">
           {view.narration}

@@ -26,13 +26,14 @@ type PatternColoringBoardProps = {
   children?: React.ReactNode;
   onContainerPointerMove?: (e: React.PointerEvent<HTMLDivElement>) => void;
   onContainerPointerUp?: () => void;
+  onArtworkChange?: () => void;
 };
 
 export const PatternColoringBoard = React.forwardRef<
   PatternColoringBoardHandle,
   PatternColoringBoardProps
 >(function PatternColoringBoard(
-  { pattern, selectedColor, children, onContainerPointerMove, onContainerPointerUp },
+  { pattern, selectedColor, children, onContainerPointerMove, onContainerPointerUp, onArtworkChange },
   ref,
 ) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -122,6 +123,7 @@ export const PatternColoringBoard = React.forwardRef<
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
     floodFillPattern(ctx, x, y, selectedColor, CANVAS_SIZE, CANVAS_SIZE);
+    onArtworkChange?.();
   };
 
   return (

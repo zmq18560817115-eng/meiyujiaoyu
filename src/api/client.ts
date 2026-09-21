@@ -179,6 +179,11 @@ export const api = {
         body: JSON.stringify(course),
         role: "teacher",
       }),
+    remove: (id: string) =>
+      apiFetch<{ deleted: true }>(`/api/courses/${id}`, {
+        method: "DELETE",
+        role: "teacher",
+      }),
   },
 
   resources: {

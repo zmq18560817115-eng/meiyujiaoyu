@@ -29,6 +29,15 @@ export interface Resource {
   fileType: string;
   downloads: number;
   previewUrl?: string;
+  downloadUrl?: string;
+  downloadName?: string;
+  attachments?: Array<{
+    id: string;
+    title: string;
+    fileType: string;
+    size: string;
+    downloadUrl: string;
+  }>;
 }
 
 export interface StudentArtwork {
