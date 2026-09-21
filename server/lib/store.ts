@@ -22,6 +22,19 @@ function syncBuiltinArtworkImages(artworks: DataStore['artworks']) {
   });
 }
 
+function syncBuiltinResourceNames(resources: DataStore['resources']) {
+  return resources.map((resource) =>
+    resource.id === 'res-4'
+      ? {
+          ...resource,
+          title: '白族彩绘经典纹样',
+          downloadUrl: '/resources/%E7%99%BD%E6%97%8F%E5%BD%A9%E7%BB%98%E7%BB%8F%E5%85%B8%E7%BA%B9%E6%A0%B7.docx',
+          downloadName: '白族彩绘经典纹样',
+        }
+      : resource,
+  );
+}
+
 function ensureDir() {
   if (!fs.existsSync(DATA_DIR)) {
     fs.mkdirSync(DATA_DIR, { recursive: true });
@@ -49,6 +62,7 @@ export function loadStore(): DataStore {
       studentSessions: parsed.studentSessions ?? defaults.studentSessions,
       projection: { ...defaults.projection, ...parsed.projection },
       pptKnowledge: mergePptKnowledgeStore(parsed.pptKnowledge),
+      resources: syncBuiltinResourceNames(parsed.resources ?? defaults.resources),
       artworks: syncBuiltinArtworkImages(
         parsed.artworks?.length ? parsed.artworks : defaults.artworks,
       ),

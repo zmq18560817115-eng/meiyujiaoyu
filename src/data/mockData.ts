@@ -95,14 +95,14 @@ export const INITIAL_RESOURCES: Resource[] = [
   },
   {
     id: 'res-4',
-    title: '【特色库】白族彩绘典型纹样矢量库 (卷云、牡丹、蝴蝶共24款)',
+    title: '白族彩绘经典纹样',
     type: 'core',
     size: '3.5 MB',
     date: '2026-05-28',
     fileType: 'docx',
     downloads: 310,
-    downloadUrl: '/resources/%E7%BA%B9%E6%A0%B7.docx',
-    downloadName: '纹样'
+    downloadUrl: '/resources/%E7%99%BD%E6%97%8F%E5%BD%A9%E7%BB%98%E7%BB%8F%E5%85%B8%E7%BA%B9%E6%A0%B7.docx',
+    downloadName: '白族彩绘经典纹样'
   },
   {
     id: 'res-5',
