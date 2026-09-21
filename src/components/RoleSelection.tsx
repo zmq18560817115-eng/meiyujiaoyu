@@ -53,7 +53,6 @@ export const RoleSelection: React.FC<RoleSelectionProps> = ({
     [studentClass],
   );
 
-  const isDev = import.meta.env.DEV;
   const devTeacher = DEFAULT_TEACHERS[0];
   const devStudent = DEFAULT_STUDENTS[0];
 
@@ -320,7 +319,6 @@ export const RoleSelection: React.FC<RoleSelectionProps> = ({
               }}
               className="space-y-4"
             >
-              {isDev && (
                 <button
                   type="button"
                   disabled={loggingIn}
@@ -335,9 +333,8 @@ export const RoleSelection: React.FC<RoleSelectionProps> = ({
                 >
                   {loggingIn
                     ? "进入中…"
-                    : `测试快捷登录 · ${devStudent.name}（${devStudent.grade}）`}
+                    : `一键测试登录 · ${devStudent.name}（${devStudent.grade}）`}
                 </button>
-              )}
 
               <div>
                 <label className="block text-caption font-bold text-nupul-dark mb-1.5 ml-1">
@@ -456,7 +453,6 @@ export const RoleSelection: React.FC<RoleSelectionProps> = ({
             </div>
 
             <form onSubmit={handleTeacherLogin} className="space-y-4">
-              {isDev && (
                 <button
                   type="button"
                   disabled={loggingIn}
@@ -467,9 +463,8 @@ export const RoleSelection: React.FC<RoleSelectionProps> = ({
                 >
                   {loggingIn
                     ? "登录中…"
-                    : `测试快捷登录 · ${devTeacher.name}老师（${devTeacher.workId}）`}
+                    : `一键测试登录 · ${devTeacher.name}老师（${devTeacher.workId}）`}
                 </button>
-              )}
 
               <div>
                 <label className="block text-caption font-bold text-nupul-dark mb-1.5 ml-1">
