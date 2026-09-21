@@ -91,6 +91,8 @@ function AppContent() {
   const [resources, setResources] = useState<Resource[]>([]);
   const [studentWorks, setStudentWorks] = useState<StudentArtwork[]>([]);
   const [galleryWorks, setGalleryWorks] = useState<StudentArtwork[]>([]);
+  const [studentHotspots, setStudentHotspots] = useState<Awaited<ReturnType<typeof api.bootstrap.student>>["hotspots"]>([]);
+  const [studentProjection, setStudentProjection] = useState<Awaited<ReturnType<typeof api.bootstrap.student>>["projection"] | null>(null);
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [schedules, setSchedules] = useState<ScheduleItem[]>([]);
   const [stats, setStats] = useState<
@@ -125,29 +127,18 @@ function AppContent() {
   const refreshTeacher = useCallback(async () => {
     setLoading(true);
     try {
-      const [boot, dash] = await Promise.all([
-        api.bootstrap.teacher(),
-        api.dashboard.teacher().catch(() => null),
-      ]);
+      const boot = await api.bootstrap.teacher();
       setCourses(boot.courses);
       setResources(boot.resources);
       setStudentWorks(boot.artworks);
       setAnnouncements(boot.announcements);
       setSchedules(boot.schedules as ScheduleItem[]);
-      setStats({ ...boot.stats, prideScore: boot.stats.prideScore });
-      if (dash) {
-        setDashboard({
-          pendingReviews: dash.pendingReviews,
-          prideScore: dash.prideScore,
-          galleryCount: dash.galleryCount,
-        });
-        setStats((prev) => ({
-          ...prev,
-          activeStudents: dash.activeStudents,
-          completionRate: dash.completionRate,
-          totalWorks: dash.totalWorks,
-        }));
-      }
+      setStats({ ...boot.stats, totalWorks: boot.artworks.length, prideScore: boot.stats.prideScore });
+      setDashboard({
+        pendingReviews: boot.artworks.filter((work) => !work.approved).length,
+        prideScore: boot.stats.prideScore ?? 89.4,
+        galleryCount: boot.artworks.filter((work) => work.approved).length,
+      });
     } catch (e) {
       console.error("教师端数据加载失败", e);
     } finally {
@@ -160,6 +151,8 @@ function AppContent() {
     try {
       const boot = await api.bootstrap.student();
       setGalleryWorks(boot.artworks);
+      setStudentHotspots(boot.hotspots);
+      setStudentProjection(boot.projection);
     } catch (e) {
       console.error("学生端数据加载失败", e);
     } finally {
@@ -208,7 +201,7 @@ function AppContent() {
       setStudentMainTab("view3d");
     }
 
-    const bootMs = 2800;
+    const bootMs = 900;
     const minDisplay = new Promise<void>((resolve) => {
       window.setTimeout(resolve, bootMs);
     });
@@ -301,7 +294,7 @@ function AppContent() {
       role={entryBoot.role}
       displayName={entryBoot.displayName}
       tagline={entryBoot.tagline}
-      durationMs={2800}
+      durationMs={900}
       exiting={entryLoaderExiting}
       onExitComplete={() => {
         setEntryLoaderExiting(false);
@@ -449,6 +442,8 @@ function AppContent() {
                     activeTab={studentMainTab}
                     onActiveTabChange={setStudentMainTab}
                     galleryWorks={galleryWorks}
+                    initialHotspots={studentHotspots}
+                    initialProjection={studentProjection}
                     studentProfile={studentProfile}
                     onRefreshGallery={refreshStudent}
                   />

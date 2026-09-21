@@ -43,6 +43,8 @@ interface StudentPortalProps {
   activeTab: StudentMainTab;
   onActiveTabChange: (tab: StudentMainTab) => void;
   galleryWorks: StudentArtwork[];
+  initialHotspots: PanoramaHotspot[];
+  initialProjection: { hotspotId: string; active?: boolean; updatedAt: number } | null;
   studentProfile: { name: string; grade: string } | null;
   onRefreshGallery: () => void;
 }
@@ -51,6 +53,8 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
   activeTab,
   onActiveTabChange,
   galleryWorks,
+  initialHotspots,
+  initialProjection,
   studentProfile,
   onRefreshGallery,
 }) => {
@@ -130,60 +134,26 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
       setSelectedPanoramaView(viewIdFromSyncId(projection.hotspotId));
     }
   }, [projection.active, projection.hotspotId]);
-  const [hotspots, setHotspots] = useState<PanoramaHotspot[]>([]);
+  const [hotspots, setHotspots] = useState<PanoramaHotspot[]>(initialHotspots);
 
   useEffect(() => {
-    api.panorama
-      .hotspots()
-      .then((data) => {
-        setHotspots(data.hotspots);
-        if (data.hotspots.length > 0) {
-          const syncId = data.hotspots[1]?.id || data.hotspots[0].id;
-          setSelectedHotspot(syncId);
-          setSelectedPanoramaView(viewIdFromSyncId(syncId));
-        }
-      })
-      .catch(() => {
-        setHotspots([
-          {
-            id: "roof",
-            x: "50%",
-            y: "15%",
-            title: "高悬飞檐与斗拱彩绘",
-            bilingual: "Roof Eaves",
-            desc: "飞檐斗拱彩绘…",
-          },
-          {
-            id: "gate",
-            x: "50%",
-            y: "45%",
-            title: "一门两窗与“清白”门头",
-            bilingual: "Main Entrance",
-            desc: "牌楼式大门…",
-          },
-          {
-            id: "wall",
-            x: "15%",
-            y: "60%",
-            title: "‘清白传家’照壁水墨",
-            bilingual: "Reflections Wall",
-            desc: "照壁水墨…",
-          },
-        ]);
+    setHotspots(initialHotspots);
+    if (initialHotspots.length > 0 && !initialProjection?.active) {
+      const syncId = initialHotspots[1]?.id || initialHotspots[0].id;
+      setSelectedHotspot(syncId);
+      setSelectedPanoramaView(viewIdFromSyncId(syncId));
+    }
+  }, [initialHotspots, initialProjection?.active]);
+
+  useEffect(() => {
+    if (initialProjection?.hotspotId) {
+      setProjection({
+        hotspotId: initialProjection.hotspotId,
+        active: initialProjection.active ?? false,
+        updatedAt: initialProjection.updatedAt,
       });
-    api.bootstrap
-      .student()
-      .then((boot) => {
-        if (boot.projection?.hotspotId) {
-          setProjection({
-            hotspotId: boot.projection.hotspotId,
-            active: boot.projection.active ?? false,
-            updatedAt: boot.projection.updatedAt,
-          });
-        }
-      })
-      .catch(() => {});
-  }, [setProjection]);
+    }
+  }, [initialProjection, setProjection]);
 
   // -------------------------------------------------------------
   // 2. Smart Coloring Canvas State

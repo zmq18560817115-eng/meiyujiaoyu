@@ -21,7 +21,7 @@ export const IpMascotRunnerFigure: React.FC<IpMascotRunnerFigureProps> = ({
     focusable="false"
   >
     <image
-      href="/ip-mascot-cutout-hd-right.png"
+      href="/ip-mascot-cutout-hd-right.webp"
       width="275"
       height="572"
       preserveAspectRatio="xMidYMid meet"
