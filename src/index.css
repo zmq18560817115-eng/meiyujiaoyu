@@ -719,8 +719,10 @@ body {
 
 .ip-run-runner-figure {
   display: block;
-  width: 44px;
+  width: 58px;
   height: auto;
+  max-width: none;
+  object-fit: contain;
   user-select: none;
   pointer-events: none;
   shape-rendering: geometricPrecision;

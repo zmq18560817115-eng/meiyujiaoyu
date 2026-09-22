@@ -246,8 +246,8 @@ export const PortalEntryLoader: React.FC<PortalEntryLoaderProps> = ({
 
             <motion.div
               className={`ip-run-runner-wrap ${celebrate ? "is-celebrate" : ""}`}
-              initial={{ left: "0%" }}
-              animate={{ left: "100%" }}
+              initial={{ left: "29px" }}
+              animate={{ left: "calc(100% - 29px)" }}
               transition={{
                 duration: runSec,
                 ease: EASE_RUN,
