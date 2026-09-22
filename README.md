@@ -16,6 +16,8 @@ View your app in AI Studio: [https://ai.studio/apps/2a5e1129-526c-4f93-8648-d5b8
 
 ## REST API（已实现）
 
+系统的 AI 使用范围、人工审核责任及当前待完善事项见 [AI 风险边界说明](docs/AI风险边界说明.md)。
+
 服务入口 `http://localhost:3000`，统一响应格式 `{ code, message, data }`。
 
 **演示教师账号：** 工号 `SL-1008`，密码 `demo123`（密码也可留空）
@@ -39,4 +41,3 @@ View your app in AI Studio: [https://ai.studio/apps/2a5e1129-526c-4f93-8648-d5b8
 1. **学生登录**：入口选择「学生登录」，填写姓名与班级后进入研学舱，作品自动署名。
 2. **画布 PNG 导出**：发布作品时将 SVG 设色稿导出为 PNG 并上传至 `/api/uploads`。
 3. **WebSocket 投屏**：教师端 3D 全景点击「投屏」后，学生端 3D 视图实时跟随热点（`ws://host/ws/projection`）。
-
